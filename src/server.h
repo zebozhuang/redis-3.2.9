@@ -71,6 +71,7 @@ typedef long long mstime_t; /* millisecond time type. */
 #include "crc64.h"
 
 /* Error codes */
+/* 服务器错误码 */
 #define C_OK                    0
 #define C_ERR                   -1
 
@@ -78,10 +79,10 @@ typedef long long mstime_t; /* millisecond time type. */
 #define CONFIG_DEFAULT_HZ        10      /* Time interrupt calls/sec. */
 #define CONFIG_MIN_HZ            1
 #define CONFIG_MAX_HZ            500
-#define CONFIG_DEFAULT_SERVER_PORT        6379    /* TCP port */
-#define CONFIG_DEFAULT_TCP_BACKLOG       511     /* TCP listen backlog */
+#define CONFIG_DEFAULT_SERVER_PORT        6379    /* TCP port 服务器默认端口 */
+#define CONFIG_DEFAULT_TCP_BACKLOG       511     /* TCP listen backlog 服务器监听时，最多tcp accept连接 */
 #define CONFIG_DEFAULT_CLIENT_TIMEOUT       0       /* default client timeout: infinite */
-#define CONFIG_DEFAULT_DBNUM     16
+#define CONFIG_DEFAULT_DBNUM     16             /* 默认数据库数量 */
 #define CONFIG_MAX_LINE    1024
 #define CRON_DBS_PER_CALL 16
 #define NET_MAX_WRITES_PER_EVENT (1024*64)
@@ -189,6 +190,7 @@ typedef long long mstime_t; /* millisecond time type. */
 #define CMD_FAST 8192                 /* "F" flag */
 
 /* Object types */
+/* 对象类型，数据类型 */
 #define OBJ_STRING 0
 #define OBJ_LIST 1
 #define OBJ_SET 2
@@ -198,6 +200,7 @@ typedef long long mstime_t; /* millisecond time type. */
 /* Objects encoding. Some kind of objects like Strings and Hashes can be
  * internally represented in multiple ways. The 'encoding' field of the object
  * is set to one of this fields for this object. */
+/* 编码类型 */
 #define OBJ_ENCODING_RAW 0     /* Raw representation */
 #define OBJ_ENCODING_INT 1     /* Encoded as integer */
 #define OBJ_ENCODING_HT 2      /* Encoded as hash table */
