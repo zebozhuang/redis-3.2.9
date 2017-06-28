@@ -460,6 +460,7 @@ typedef long long mstime_t; /* millisecond time type. */
 /* A redis object, that is a type able to hold a string / list / set */
 
 /* The actual Redis Object */
+/*　Redis实际的对象，包含了lru算法（最近最少使用）,参考https://en.wikipedia.org/wiki/Cache_replacement_policies#LRU*/
 #define LRU_BITS 24
 #define LRU_CLOCK_MAX ((1<<LRU_BITS)-1) /* Max value of obj->lru */
 #define LRU_CLOCK_RESOLUTION 1000 /* LRU clock resolution in ms */
@@ -504,6 +505,7 @@ struct evictionPoolEntry {
 /* Redis database representation. There are multiple databases identified
  * by integers from 0 (the default database) up to the max configured
  * database. The database number is the 'id' field in the structure. */
+/*　RedisDb 数据库 */
 typedef struct redisDb {
     dict *dict;                 /* The keyspace for this DB */
     dict *expires;              /* Timeout of keys with a timeout set */
@@ -516,6 +518,7 @@ typedef struct redisDb {
 } redisDb;
 
 /* Client MULTI/EXEC state */
+/* Redis命令　*/
 typedef struct multiCmd {
     robj **argv;
     int argc;
