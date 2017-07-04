@@ -44,6 +44,7 @@
 /* Unused arguments generate annoying warnings... */
 #define DICT_NOTUSED(V) ((void) V)
 
+/* 字典实体，相当于节点node, 该节点包括键，值，以及下个碰撞键节点。 */
 typedef struct dictEntry {
     void *key;
     union {
