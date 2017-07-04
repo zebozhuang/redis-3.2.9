@@ -77,6 +77,7 @@ void listRelease(list *list)
  * On error, NULL is returned and no operation is performed (i.e. the
  * list remains unaltered).
  * On success the 'list' pointer you pass to the function is returned. */
+/* 列表头部添加节点 */
 list *listAddNodeHead(list *list, void *value)
 {
     listNode *node;
@@ -103,6 +104,7 @@ list *listAddNodeHead(list *list, void *value)
  * On error, NULL is returned and no operation is performed (i.e. the
  * list remains unaltered).
  * On success the 'list' pointer you pass to the function is returned. */
+/* 列表尾部加入节点 */
 list *listAddNodeTail(list *list, void *value)
 {
     listNode *node;
@@ -122,7 +124,7 @@ list *listAddNodeTail(list *list, void *value)
     list->len++;
     return list;
 }
-
+/* 列表插入节点 */
 list *listInsertNode(list *list, listNode *old_node, void *value, int after) {
     listNode *node;
 
@@ -156,6 +158,7 @@ list *listInsertNode(list *list, listNode *old_node, void *value, int after) {
  * It's up to the caller to free the private value of the node.
  *
  * This function can't fail. */
+/* 删除节点 */
 void listDelNode(list *list, listNode *node)
 {
     if (node->prev)
@@ -239,6 +242,7 @@ listNode *listNext(listIter *iter)
  * the original node is used as value of the copied node.
  *
  * The original list both on success or error is never modified. */
+/* 复制列表 */
 list *listDup(list *orig)
 {
     list *copy;
@@ -319,6 +323,7 @@ listNode *listIndex(list *list, long index) {
 }
 
 /* Rotate the list removing the tail node and inserting it to the head. */
+/* 把尾部节点放到头部 */
 void listRotate(list *list) {
     listNode *tail = list->tail;
 
