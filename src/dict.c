@@ -319,6 +319,7 @@ int dictRehash(dict *d, int n) {
     return 1;
 }
 
+/*　毫秒级别的时间戳 */
 long long timeInMilliseconds(void) {
     struct timeval tv;
 
@@ -327,6 +328,7 @@ long long timeInMilliseconds(void) {
 }
 
 /* Rehash for an amount of time between ms milliseconds and ms+1 milliseconds */
+/* 在规定ms时间内进行100步的rehash */
 int dictRehashMilliseconds(dict *d, int ms) {
     long long start = timeInMilliseconds();
     int rehashes = 0;
@@ -346,11 +348,13 @@ int dictRehashMilliseconds(dict *d, int ms) {
  * This function is called by common lookup or update operations in the
  * dictionary so that the hash table automatically migrates from H1 to H2
  * while it is actively used. */
+/*　通常用于查找或更新时调用 */
 static void _dictRehashStep(dict *d) {
     if (d->iterators == 0) dictRehash(d,1);
 }
 
 /* Add an element to the target hash table */
+/*　添加元素到字典，如果元素key存在，则不添加返回，否则添加 */
 int dictAdd(dict *d, void *key, void *val)
 {
     dictEntry *entry = dictAddRaw(d,key);
@@ -375,6 +379,7 @@ int dictAdd(dict *d, void *key, void *val)
  * If key already exists NULL is returned.
  * If key was added, the hash entry is returned to be manipulated by the caller.
  */
+/*　添加元素key,　不过元素key存在，返回，否则添加key */
 dictEntry *dictAddRaw(dict *d, void *key)
 {
     int index;
@@ -407,6 +412,7 @@ dictEntry *dictAddRaw(dict *d, void *key)
  * Return 1 if the key was added from scratch, 0 if there was already an
  * element with such key and dictReplace() just performed a value update
  * operation. */
+/*　添加元素,　如果元素不存在，则添加，否则更新值 */
 int dictReplace(dict *d, void *key, void *val)
 {
     dictEntry *entry, auxentry;
@@ -441,6 +447,7 @@ dictEntry *dictReplaceRaw(dict *d, void *key) {
 }
 
 /* Search and remove an element */
+/* 搜索和删除一个元素 */
 static int dictGenericDelete(dict *d, const void *key, int nofree)
 {
     unsigned int h, idx;
@@ -477,16 +484,18 @@ static int dictGenericDelete(dict *d, const void *key, int nofree)
     }
     return DICT_ERR; /* not found */
 }
-
+/*　删除一个元素, 并释放元素 */
 int dictDelete(dict *ht, const void *key) {
     return dictGenericDelete(ht,key,0);
 }
 
+/*　删除一个元素，　但不释放元素 */
 int dictDeleteNoFree(dict *ht, const void *key) {
     return dictGenericDelete(ht,key,1);
 }
 
 /* Destroy an entire dictionary */
+/* 删除一个哈希表 */
 int _dictClear(dict *d, dictht *ht, void(callback)(void *)) {
     unsigned long i;
 
@@ -514,6 +523,7 @@ int _dictClear(dict *d, dictht *ht, void(callback)(void *)) {
 }
 
 /* Clear & Release the hash table */
+/*　删除一个字典 */
 void dictRelease(dict *d)
 {
     _dictClear(d,&d->ht[0],NULL);
@@ -521,6 +531,7 @@ void dictRelease(dict *d)
     zfree(d);
 }
 
+/*　查找 */
 dictEntry *dictFind(dict *d, const void *key)
 {
     dictEntry *he;
@@ -542,6 +553,7 @@ dictEntry *dictFind(dict *d, const void *key)
     return NULL;
 }
 
+/*　查找并返回元素的值 */
 void *dictFetchValue(dict *d, const void *key) {
     dictEntry *he;
 
@@ -555,6 +567,7 @@ void *dictFetchValue(dict *d, const void *key) {
  * the fingerprint again when the iterator is released.
  * If the two fingerprints are different it means that the user of the iterator
  * performed forbidden operations against the dictionary while iterating. */
+/*　字典的指纹 */
 long long dictFingerprint(dict *d) {
     long long integers[6], hash = 0;
     int j;
@@ -655,6 +668,7 @@ void dictReleaseIterator(dictIterator *iter)
 
 /* Return a random entry from the hash table. Useful to
  * implement randomized algorithms */
+/* 获取随机入口 */
 dictEntry *dictGetRandomKey(dict *d)
 {
     dictEntry *he, *orighe;
@@ -787,6 +801,7 @@ unsigned int dictGetSomeKeys(dict *d, dictEntry **des, unsigned int count) {
 
 /* Function to reverse bits. Algorithm from:
  * http://graphics.stanford.edu/~seander/bithacks.html#ReverseParallel */
+/* 反转二进制　*/
 static unsigned long rev(unsigned long v) {
     unsigned long s = 8 * sizeof(v); // bit size; must be power of 2
     unsigned long mask = ~0;

@@ -132,6 +132,7 @@ static int dictExpand(dict *ht, unsigned long size) {
 }
 
 /* Add an element to the target hash table */
+/* 添加元素，　如果字典的元素key存在，则返回不添加，否则添加 */
 static int dictAdd(dict *ht, void *key, void *val) {
     int index;
     dictEntry *entry;
@@ -157,6 +158,7 @@ static int dictAdd(dict *ht, void *key, void *val) {
  * Return 1 if the key was added from scratch, 0 if there was already an
  * element with such key and dictReplace() just performed a value update
  * operation. */
+/*　添加元素，乳沟字典的元素key存在，则替换，否则添加 */
 static int dictReplace(dict *ht, void *key, void *val) {
     dictEntry *entry, auxentry;
 
@@ -179,6 +181,7 @@ static int dictReplace(dict *ht, void *key, void *val) {
 }
 
 /* Search and remove an element */
+/*　删除字典元素 */
 static int dictDelete(dict *ht, const void *key) {
     unsigned int h;
     dictEntry *de, *prevde;
@@ -210,6 +213,7 @@ static int dictDelete(dict *ht, const void *key) {
 }
 
 /* Destroy an entire hash table */
+/* 清楚哈希表数据*/
 static int _dictClear(dict *ht) {
     unsigned long i;
 
@@ -235,11 +239,13 @@ static int _dictClear(dict *ht) {
 }
 
 /* Clear & Release the hash table */
+/* 清楚哈希表数据并释放哈希表 */
 static void dictRelease(dict *ht) {
     _dictClear(ht);
     free(ht);
 }
 
+/*　查找 */
 static dictEntry *dictFind(dict *ht, const void *key) {
     dictEntry *he;
     unsigned int h;
