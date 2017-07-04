@@ -313,8 +313,8 @@ int dictRehash(dict *d, int n) {
         d->rehashidx = -1;
         return 0;
     }
-
-    show(d);  /* 输出重哈希的字典 */ 
+    /* 输出重哈希的字典, 通过这里我们可以看出，每次操作都会有一次rehash,　当d->rehashidx 不是　-1时 */ 
+    /* show(d);   */
     /* More to rehash... */
     return 1;
 }
