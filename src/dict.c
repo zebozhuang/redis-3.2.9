@@ -58,6 +58,36 @@
 static int dict_can_resize = 1;
 static unsigned int dict_force_resize_ratio = 5;
 
+/* This is the function I want to show the kv pair of a dict, it is not the original source code of redis. */
+/*　这是我重新未来debug拷贝的函数，输出字典的内容 */
+
+void showBuckets(dictht ht) {
+    if (ht.table == NULL) {
+        printf("NULL\n");
+    } else {
+        int j;
+        for (j = 0; j < ht.size; j++) {
+            printf("%c", ht.table[j] ? '1' : '0');
+        }
+        printf("\n");
+    }
+}
+
+void show(dict *d) {
+    int j;
+    if (d->rehashidx != -1) {
+        printf("rhidx: ");
+        for (j = 0; j < d->rehashidx; j++)
+            printf(".");
+        printf("|\n");
+    }
+    printf("ht[0]: ");
+    showBuckets(d->ht[0]);
+    printf("ht[1]: ");
+    showBuckets(d->ht[1]);
+    printf("\n");
+}
+
 /* -------------------------- private prototypes ---------------------------- */
 
 static int _dictExpandIfNeeded(dict *ht);
@@ -264,6 +294,7 @@ int dictRehash(dict *d, int n) {
             nextde = de->next;
             /* Get the index in the new hash table */
             h = dictHashKey(d, de->key) & d->ht[1].sizemask;
+
             de->next = d->ht[1].table[h];
             d->ht[1].table[h] = de;
             d->ht[0].used--;
@@ -283,6 +314,7 @@ int dictRehash(dict *d, int n) {
         return 0;
     }
 
+    show(d);  /* 输出重哈希的字典 */ 
     /* More to rehash... */
     return 1;
 }

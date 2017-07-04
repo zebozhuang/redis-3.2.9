@@ -1,3 +1,7 @@
+This is my analysis of Reids source code. It is not for developing, if you want to download and install redis,
+please go forward to http://redis.io and have a visit.Thanks.
+
+
 This README is just a fast *quick start* document. You can find more detailed documentation at http://redis.io.
 
 What is Redis?
