@@ -1,3 +1,6 @@
+/*
+    ziplist是为了给链表编码用的，它可以存储整数或者字符串，整数可以被编码为真正的整数（整数是字符窜形式存储）
+*/
 /* The ziplist is a specially encoded dually linked list that is designed
  * to be very memory efficient. It stores both strings and integer values,
  * where integers are encoded as actual integers instead of a series of
@@ -7,7 +10,7 @@
  * amount of memory used by the ziplist.
  *
  * ----------------------------------------------------------------------------
- *
+ * ZIPLIST 布局结构
  * ZIPLIST OVERALL LAYOUT:
  * The general layout of the ziplist is as follows:
  * <zlbytes><zltail><zllen><entry><entry><zlend>
@@ -150,11 +153,13 @@
 
 /* We know a positive increment can only be 1 because entries can only be
  * pushed one at a time. */
+/* ZIPLIST增加长度 */
 #define ZIPLIST_INCR_LENGTH(zl,incr) { \
     if (ZIPLIST_LENGTH(zl) < UINT16_MAX) \
         ZIPLIST_LENGTH(zl) = intrev16ifbe(intrev16ifbe(ZIPLIST_LENGTH(zl))+incr); \
 }
 
+/* ziplist的entry */
 typedef struct zlentry {
     unsigned int prevrawlensize, prevrawlen;
     unsigned int lensize, len;
