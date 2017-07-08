@@ -42,6 +42,7 @@
  * attempted_compress: 1 bit, boolean, used for verifying during testing.
  * extra: 12 bits, free for future use; pads out the remainder of 32 bits */
 /* 快速列表 */
+/* 使用位域， 可以更节省内存空间, 一共使用了32位int,4个字节 */
 typedef struct quicklistNode {
     struct quicklistNode *prev;
     struct quicklistNode *next;
