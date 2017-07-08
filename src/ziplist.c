@@ -13,11 +13,11 @@
  * ZIPLIST 布局结构
  * ZIPLIST OVERALL LAYOUT:
  * The general layout of the ziplist is as follows:
- * <zlbytes><zltail><zllen><entry><entry><zlend>
+ * <zlbytes><zltail><zllen><entry><entry>...<entry><zlend>
  *
  * <zlbytes> is an unsigned integer to hold the number of bytes that the
  * ziplist occupies. This value needs to be stored to be able to resize the
- * entire structure without the need to traverse it first.
+ * entire structure without the need to traverse it first.  -- 
  *
  * <zltail> is the offset to the last entry in the list. This allows a pop
  * operation on the far side of the list without the need for full traversal.
