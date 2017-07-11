@@ -261,6 +261,8 @@ unsigned int zipEncodeLength(unsigned char *p, unsigned char encoding, unsigned 
  * entries encoding, the 'lensize' variable will hold the number of bytes
  * required to encode the entries length, and the 'len' variable will hold the
  * entries length. */
+/* 解压除ptr的编码及长度
+ */
 #define ZIP_DECODE_LENGTH(ptr, encoding, lensize, len) do {                    \
     ZIP_ENTRY_ENCODING((ptr), (encoding));                                     \
     if ((encoding) < ZIP_STR_MASK) {                                           \
@@ -305,6 +307,7 @@ unsigned int zipPrevEncodeLength(unsigned char *p, unsigned int len) {
 
 /* Encode the length of the previous entry and write it to "p". This only
  * uses the larger encoding (required in __ziplistCascadeUpdate). */
+
 void zipPrevEncodeLengthForceLarge(unsigned char *p, unsigned int len) {
     if (p == NULL) return;
     p[0] = ZIP_BIGLEN;
