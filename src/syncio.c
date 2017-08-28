@@ -39,13 +39,14 @@
  * the key). This is why need the following blocking I/O functions.
  *
  * All the functions take the timeout in milliseconds. */
-
+/* Redis的大部分io操作都是非阻塞的, 但MIGRATE命令操作是阻塞的 */
 #define SYNCIO__RESOLUTION 10 /* Resolution in milliseconds */
 
 /* Write the specified payload to 'fd'. If writing the whole payload will be
  * done within 'timeout' milliseconds the operation succeeds and 'size' is
  * returned. Otherwise the operation fails, -1 is returned, and an unspecified
  * partial write could be performed against the file descriptor. */
+/* 写操作 */
 ssize_t syncWrite(int fd, char *ptr, ssize_t size, long long timeout) {
     ssize_t nwritten, ret = size;
     long long start = mstime();
@@ -82,6 +83,7 @@ ssize_t syncWrite(int fd, char *ptr, ssize_t size, long long timeout) {
  * within 'timeout' milliseconds the operation succeed and 'size' is returned.
  * Otherwise the operation fails, -1 is returned, and an unspecified amount of
  * data could be read from the file descriptor. */
+/* 读操作 */
 ssize_t syncRead(int fd, char *ptr, ssize_t size, long long timeout) {
     ssize_t nread, totread = 0;
     long long start = mstime();
@@ -122,6 +124,7 @@ ssize_t syncRead(int fd, char *ptr, ssize_t size, long long timeout) {
  *
  * On success the number of bytes read is returned, otherwise -1.
  * On success the string is always correctly terminated with a 0 byte. */
+/* 按行读数据 */
 ssize_t syncReadLine(int fd, char *ptr, ssize_t size, long long timeout) {
     ssize_t nread = 0;
 

@@ -38,6 +38,9 @@
  * by the user before to call AlFreeList().
  *
  * On error, NULL is returned. Otherwise the pointer to the new list. */
+/*
+ * 列表创建
+ */
 list *listCreate(void)
 {
     struct list *list;
@@ -53,7 +56,7 @@ list *listCreate(void)
 }
 
 /* Free the whole list.
- *
+ * 释放列表
  * This function can't fail. */
 void listRelease(list *list)
 {

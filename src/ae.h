@@ -53,6 +53,7 @@
 /* Macros */
 #define AE_NOTUSED(V) ((void) V)
 
+/* 声明一个对象 */
 struct aeEventLoop;
 
 /* Types and data structures */
@@ -62,6 +63,7 @@ typedef void aeEventFinalizerProc(struct aeEventLoop *eventLoop, void *clientDat
 typedef void aeBeforeSleepProc(struct aeEventLoop *eventLoop);
 
 /* File event structure */
+/* 文件事件驱动对象 */
 typedef struct aeFileEvent {
     int mask; /* one of AE_(READABLE|WRITABLE) */
     aeFileProc *rfileProc;
@@ -70,6 +72,7 @@ typedef struct aeFileEvent {
 } aeFileEvent;
 
 /* Time event structure */
+/* 时间时间驱动对象 */
 typedef struct aeTimeEvent {
     long long id; /* time event identifier. */
     long when_sec; /* seconds */

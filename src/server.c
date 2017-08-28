@@ -68,8 +68,10 @@ double R_Zero, R_PosInf, R_NegInf, R_Nan;
 /*================================= Globals ================================= */
 
 /* Global vars */
+/* 全局列表 */
 struct redisServer server; /* server global state */
 
+/* 命令表 */
 /* Our command table.
  *
  * Every entry is composed of the following fields:
@@ -122,25 +124,28 @@ struct redisServer server; /* server global state */
  *    Note that commands that may trigger a DEL as a side effect (like SET)
  *    are not fast commands.
  */
+/*
+ * 命令
+ */
 struct redisCommand redisCommandTable[] = {
-    {"get",getCommand,2,"rF",0,NULL,1,1,1,0,0},
-    {"set",setCommand,-3,"wm",0,NULL,1,1,1,0,0},
-    {"setnx",setnxCommand,3,"wmF",0,NULL,1,1,1,0,0},
-    {"setex",setexCommand,4,"wm",0,NULL,1,1,1,0,0},
-    {"psetex",psetexCommand,4,"wm",0,NULL,1,1,1,0,0},
-    {"append",appendCommand,3,"wm",0,NULL,1,1,1,0,0},
-    {"strlen",strlenCommand,2,"rF",0,NULL,1,1,1,0,0},
-    {"del",delCommand,-2,"w",0,NULL,1,-1,1,0,0},
-    {"exists",existsCommand,-2,"rF",0,NULL,1,-1,1,0,0},
-    {"setbit",setbitCommand,4,"wm",0,NULL,1,1,1,0,0},
-    {"getbit",getbitCommand,3,"rF",0,NULL,1,1,1,0,0},
-    {"bitfield",bitfieldCommand,-2,"wm",0,NULL,1,1,1,0,0},
-    {"setrange",setrangeCommand,4,"wm",0,NULL,1,1,1,0,0},
-    {"getrange",getrangeCommand,4,"r",0,NULL,1,1,1,0,0},
-    {"substr",getrangeCommand,4,"r",0,NULL,1,1,1,0,0},
-    {"incr",incrCommand,2,"wmF",0,NULL,1,1,1,0,0},
-    {"decr",decrCommand,2,"wmF",0,NULL,1,1,1,0,0},
-    {"mget",mgetCommand,-2,"r",0,NULL,1,-1,1,0,0},
+    {"get",getCommand,2,"rF",0,NULL,1,1,1,0,0},                     /* GET 获取命令 */
+    {"set",setCommand,-3,"wm",0,NULL,1,1,1,0,0},                    /* SET 设置命令 */
+    {"setnx",setnxCommand,3,"wmF",0,NULL,1,1,1,0,0},                /* SETNX 如果key不存在，则设置, set if not exist*/
+    {"setex",setexCommand,4,"wm",0,NULL,1,1,1,0,0},                 /* SETEX 如果key存在，则覆写, 并设置过期时间 */
+    {"psetex",psetexCommand,4,"wm",0,NULL,1,1,1,0,0},               /* PSETEX 同SETEX，但过期时间是毫秒级别 */
+    {"append",appendCommand,3,"wm",0,NULL,1,1,1,0,0},               /* APPEND 字符串追加 */
+    {"strlen",strlenCommand,2,"rF",0,NULL,1,1,1,0,0},               /* STRLEN 字符串长度 */
+    {"del",delCommand,-2,"w",0,NULL,1,-1,1,0,0},                    /* DEL 删除命令 */
+    {"exists",existsCommand,-2,"rF",0,NULL,1,-1,1,0,0},             /* EXISTS 判断key是否存在 */
+    {"setbit",setbitCommand,4,"wm",0,NULL,1,1,1,0,0},               /* SETBIT 设置key的位0/1, 最后的数字小于2^32*/
+    {"getbit",getbitCommand,3,"rF",0,NULL,1,1,1,0,0},               /* GETBIT 获取key的所有位 */
+    {"bitfield",bitfieldCommand,-2,"wm",0,NULL,1,1,1,0,0},          /* BITFIELD 命令可以将一个redis字符串看作一个由二进制位组成的数组, 并对数组的存储的长度不同的整数进行访问 */
+    {"setrange",setrangeCommand,4,"wm",0,NULL,1,1,1,0,0},           /* SETRANGE 对字符串按范围设置字符替换 */
+    {"getrange",getrangeCommand,4,"r",0,NULL,1,1,1,0,0},            /* GETRANGE 获取字符串的子字符串 */
+    {"substr",getrangeCommand,4,"r",0,NULL,1,1,1,0,0},              /* SUBSTR 同GETRANGE */
+    {"incr",incrCommand,2,"wmF",0,NULL,1,1,1,0,0},                  /* INCR 增加 */
+    {"decr",decrCommand,2,"wmF",0,NULL,1,1,1,0,0},                  /* DECR 减少 */
+    {"mget",mgetCommand,-2,"r",0,NULL,1,-1,1,0,0},                  /* MGET 给定的keys获取返回多个值 */
     {"rpush",rpushCommand,-3,"wmF",0,NULL,1,1,1,0,0},
     {"lpush",lpushCommand,-3,"wmF",0,NULL,1,1,1,0,0},
     {"rpushx",rpushxCommand,3,"wmF",0,NULL,1,1,1,0,0},
