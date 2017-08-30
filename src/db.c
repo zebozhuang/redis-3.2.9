@@ -837,6 +837,7 @@ void moveCommand(client *c) {
  * Expires API
  *----------------------------------------------------------------------------*/
 
+/* 删除过期时间 */
 int removeExpire(redisDb *db, robj *key) {
     /* An expire may only be removed if there is a corresponding entry in the
      * main dict. Otherwise, the key will never be freed. */
@@ -844,6 +845,7 @@ int removeExpire(redisDb *db, robj *key) {
     return dictDelete(db->expires,key->ptr) == DICT_OK;
 }
 
+/* 设置过期时间 */
 void setExpire(redisDb *db, robj *key, long long when) {
     dictEntry *kde, *de;
 
@@ -856,6 +858,7 @@ void setExpire(redisDb *db, robj *key, long long when) {
 
 /* Return the expire time of the specified key, or -1 if no expire
  * is associated with this key (i.e. the key is non volatile) */
+/* 获取一个key的过期时间 */
 long long getExpire(redisDb *db, robj *key) {
     dictEntry *de;
 
