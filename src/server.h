@@ -138,7 +138,7 @@ typedef long long mstime_t; /* millisecond time type. */
 #define NET_IP_STR_LEN 46 /* INET6_ADDRSTRLEN is 46, but we need to be sure */
 #define NET_PEER_ID_LEN (NET_IP_STR_LEN+32) /* Must be enough for ip:port */
 #define CONFIG_BINDADDR_MAX 16
-#define CONFIG_MIN_RESERVED_FDS 32
+#define CONFIG_MIN_RESERVED_FDS 32          /* 保留32个文字描述符 */
 #define CONFIG_DEFAULT_LATENCY_MONITOR_THRESHOLD 0
 
 #define ACTIVE_EXPIRE_CYCLE_LOOKUPS_PER_LOOP 20 /* Loopkups per loop. */

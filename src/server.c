@@ -1100,6 +1100,16 @@ void updateCachedTime(void) {
  * so in order to throttle execution of things we want to do less frequently
  * a macro is used: run_with_period(milliseconds) { .... }
  */
+/*
+ * 服务器定时任务:
+ * 处理过期的key
+ * 监控
+ * 更新数据统计
+ * 数据库重新哈希
+ * 触发BGSAVE / AOF
+ * 复制重连
+ * 。。。
+ */
 
 int serverCron(struct aeEventLoop *eventLoop, long long id, void *clientData) {
     int j;
@@ -1111,7 +1121,7 @@ int serverCron(struct aeEventLoop *eventLoop, long long id, void *clientData) {
      * handler if we don't return here fast enough. */
     if (server.watchdog_period) watchdogScheduleSignal(server.watchdog_period);
 
-    /* Update the time cache. */
+    /* Update the time cache. */ /* 更新系统时间 */
     updateCachedTime();
 
     run_with_period(100) {
@@ -1460,6 +1470,7 @@ void createSharedObjects(void) {
     shared.maxstring = createStringObject("maxstring",9);
 }
 
+/* 初始化数据库服务器配置 */
 void initServerConfig(void) {
     int j;
 
@@ -1550,6 +1561,7 @@ void initServerConfig(void) {
     server.lruclock = getLRUClock();
     resetServerSaveParams();
 
+    /* 初始化保存数据频率 */
     appendServerSaveParams(60*60,1);  /* save after 1 hour and 1 change */
     appendServerSaveParams(300,100);  /* save after 5 minutes and 100 changes */
     appendServerSaveParams(60,10000); /* save after 1 minute and 10000 changes */
@@ -1595,6 +1607,7 @@ void initServerConfig(void) {
     /* Command table -- we initiialize it here as it is part of the
      * initial configuration, since command names may be changed via
      * redis.conf using the rename-command directive. */
+    /* 服务器的命令加载在commands */
     server.commands = dictCreate(&commandTableDictType,NULL);
     server.orig_commands = dictCreate(&commandTableDictType,NULL);
     populateCommandTable();
@@ -1638,6 +1651,7 @@ extern char **environ;
  *
  * On success the function does not return, because the process turns into
  * a different process. On error C_ERR is returned. */
+/* 重启服务器 */
 int restartServer(int flags, mstime_t delay) {
     int j;
 
@@ -1679,7 +1693,7 @@ int restartServer(int flags, mstime_t delay) {
 void adjustOpenFilesLimit(void) {
     rlim_t maxfiles = server.maxclients+CONFIG_MIN_RESERVED_FDS;
     struct rlimit limit;
-
+    /*如果获取不到文件描述符个数，则保存32个文字描述符 */
     if (getrlimit(RLIMIT_NOFILE,&limit) == -1) {
         serverLog(LL_WARNING,"Unable to obtain the current NOFILE limit (%s), assuming 1024 and setting the max clients configuration accordingly.",
             strerror(errno));
@@ -1783,6 +1797,7 @@ void checkTcpBacklogSettings(void) {
  * impossible to bind, or no bind addresses were specified in the server
  * configuration but the function is not able to bind * for at least
  * one of the IPv4 or IPv6 protocols. */
+/* 服务器监听 */
 int listenToPort(int port, int *fds, int *count) {
     int j;
 
@@ -1845,6 +1860,7 @@ int listenToPort(int port, int *fds, int *count) {
 /* Resets the stats that we expose via INFO or other means that we want
  * to reset via CONFIG RESETSTAT. The function is also used in order to
  * initialize these fields in initServer() at server startup. */
+/* 重置服务器数据收集 */
 void resetServerStats(void) {
     int j;
 
@@ -1872,6 +1888,7 @@ void resetServerStats(void) {
     server.aof_delayed_fsync = 0;
 }
 
+/* 初始化服务器 */
 void initServer(void) {
     int j;
 
@@ -2066,12 +2083,15 @@ void resetCommandTableStats(void) {
 }
 
 /* ========================== Redis OP Array API ============================ */
+/* Redis操作数组API */
 
+/* 初始化数组 */
 void redisOpArrayInit(redisOpArray *oa) {
     oa->ops = NULL;
     oa->numops = 0;
 }
 
+/* 添加命令到数组 */
 int redisOpArrayAppend(redisOpArray *oa, struct redisCommand *cmd, int dbid,
                        robj **argv, int argc, int target)
 {
@@ -2088,6 +2108,7 @@ int redisOpArrayAppend(redisOpArray *oa, struct redisCommand *cmd, int dbid,
     return oa->numops;
 }
 
+/* 释放数组 */
 void redisOpArrayFree(redisOpArray *oa) {
     while(oa->numops) {
         int j;
@@ -2103,11 +2124,14 @@ void redisOpArrayFree(redisOpArray *oa) {
 }
 
 /* ====================== Commands lookup and execution ===================== */
+/* 命令查找和执行 */
 
+/* 从服务器加载的commands中查找存在的命令 */
 struct redisCommand *lookupCommand(sds name) {
     return dictFetchValue(server.commands, name);
 }
 
+/* 重载redisCommand接口 */
 struct redisCommand *lookupCommandByCString(char *s) {
     struct redisCommand *cmd;
     sds name = sdsnew(s);
@@ -2124,6 +2148,7 @@ struct redisCommand *lookupCommandByCString(char *s) {
  * This is used by functions rewriting the argument vector such as
  * rewriteClientCommandVector() in order to set client->cmd pointer
  * correctly even if the command was renamed. */
+/* 如果命令被重名了，可以从原来的命令表再查找 */
 struct redisCommand *lookupCommandOrOriginal(sds name) {
     struct redisCommand *cmd = dictFetchValue(server.commands, name);
 
@@ -2241,6 +2266,7 @@ void preventCommandReplication(client *c) {
  * preventCommandReplication(client *c);
  *
  */
+/* 调用 */
 void call(client *c, int flags) {
     long long dirty, start, duration;
     int client_old_flags = c->flags;
@@ -2363,6 +2389,7 @@ void call(client *c, int flags) {
  * If C_OK is returned the client is still alive and valid and
  * other operations can be performed by the caller. Otherwise
  * if C_ERR is returned the client was destroyed (i.e. after QUIT). */
+/* 客户端命令处理，命令被检验和认证, 最后执行(?) */
 int processCommand(client *c) {
     /* The QUIT command is handled separately. Normal command procs will
      * go through checking for replication and QUIT will cause trouble
@@ -2553,6 +2580,7 @@ int processCommand(client *c) {
 
 /* Close listening sockets. Also unlink the unix domain socket if
  * unlink_unix_socket is non-zero. */
+/* 关闭服务器socket */
 void closeListeningSockets(int unlink_unix_socket) {
     int j;
 
@@ -2566,6 +2594,7 @@ void closeListeningSockets(int unlink_unix_socket) {
     }
 }
 
+/* 关机之前的准备：Kill saving child, BGSave, ... */
 int prepareForShutdown(int flags) {
     int save = flags & SHUTDOWN_SAVE;
     int nosave = flags & SHUTDOWN_NOSAVE;
