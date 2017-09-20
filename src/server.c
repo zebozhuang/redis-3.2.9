@@ -56,6 +56,7 @@
 #include <sys/socket.h>
 
 /* Our shared "common" objects */
+/* 一些共享变量, 在server.h 631行处 */
 
 struct sharedObjectsStruct shared;
 
@@ -146,13 +147,13 @@ struct redisCommand redisCommandTable[] = {
     {"incr",incrCommand,2,"wmF",0,NULL,1,1,1,0,0},                  /* INCR 增加 */
     {"decr",decrCommand,2,"wmF",0,NULL,1,1,1,0,0},                  /* DECR 减少 */
     {"mget",mgetCommand,-2,"r",0,NULL,1,-1,1,0,0},                  /* MGET 给定的keys获取返回多个值 */
-    {"rpush",rpushCommand,-3,"wmF",0,NULL,1,1,1,0,0},
-    {"lpush",lpushCommand,-3,"wmF",0,NULL,1,1,1,0,0},
-    {"rpushx",rpushxCommand,3,"wmF",0,NULL,1,1,1,0,0},
-    {"lpushx",lpushxCommand,3,"wmF",0,NULL,1,1,1,0,0},
-    {"linsert",linsertCommand,5,"wm",0,NULL,1,1,1,0,0},
-    {"rpop",rpopCommand,2,"wF",0,NULL,1,1,1,0,0},
-    {"lpop",lpopCommand,2,"wF",0,NULL,1,1,1,0,0},
+    {"rpush",rpushCommand,-3,"wmF",0,NULL,1,1,1,0,0},               /* RPUSH 从列表队尾插入元素，key为空则创建空队列 */
+    {"lpush",lpushCommand,-3,"wmF",0,NULL,1,1,1,0,0},               /* LPUSH 从列表头部插入元素，key为空则穿件空队列*/
+    {"rpushx",rpushxCommand,3,"wmF",0,NULL,1,1,1,0,0},              /* RPUSHX 如果key存在，则添加元素到对尾，否则，不操作*/
+    {"lpushx",lpushxCommand,3,"wmF",0,NULL,1,1,1,0,0},              /* LPUSHX 如果key存在，则添加元素到头部，否则，不操作*/
+    {"linsert",linsertCommand,5,"wm",0,NULL,1,1,1,0,0},             /* LINSERT 如果KEY, 把元素插在privot的前后或者后面: LINSERT key BEFORE|AFTER pivot value*/
+    {"rpop",rpopCommand,2,"wF",0,NULL,1,1,1,0,0},                   /* 从队尾pop出数据 */
+    {"lpop",lpopCommand,2,"wF",0,NULL,1,1,1,0,0},                   /* 从队头pop出数据 */
     {"brpop",brpopCommand,-3,"ws",0,NULL,1,1,1,0,0},
     {"brpoplpush",brpoplpushCommand,4,"wms",0,NULL,1,2,1,0,0},
     {"blpop",blpopCommand,-3,"ws",0,NULL,1,-2,1,0,0},
@@ -2708,6 +2709,7 @@ int time_independent_strcmp(char *a, char *b) {
     return diff; /* If zero strings are the same. */
 }
 
+/* 认证命令 */
 void authCommand(client *c) {
     if (!server.requirepass) {
         addReplyError(c,"Client sent AUTH, but no password is set");
@@ -2722,6 +2724,7 @@ void authCommand(client *c) {
 
 /* The PING command. It works in a different way if the client is in
  * in Pub/Sub mode. */
+/* PING 命令 */
 void pingCommand(client *c) {
     /* The command takes zero or one arguments. */
     if (c->argc > 2) {
@@ -2745,6 +2748,7 @@ void pingCommand(client *c) {
     }
 }
 
+/* ECHO 命令 */
 void echoCommand(client *c) {
     addReplyBulk(c,c->argv[1]);
 }
