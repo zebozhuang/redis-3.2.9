@@ -38,6 +38,7 @@
 
 /* The current RDB version. When the format changes in a way that is no longer
  * backward compatible this number gets incremented. */
+/* 当前版本的RDB已经不向后兼容了 */
 #define RDB_VERSION 7
 
 /* Defines related to the dump file format. To store 32 bits lengths for short
@@ -53,6 +54,7 @@
  *
  * Lengths up to 63 are stored using a single byte, most DB keys, and may
  * values, will fit inside. */
+/* 大数的压缩 */
 #define RDB_6BITLEN 0
 #define RDB_14BITLEN 1
 #define RDB_32BITLEN 2
