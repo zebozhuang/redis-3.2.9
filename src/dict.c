@@ -98,6 +98,7 @@ static int _dictInit(dict *ht, dictType *type, void *privDataPtr);
 /* -------------------------- hash functions -------------------------------- */
 
 /* Thomas Wang's 32 bit Mix Function */
+/* Thomas Wang的 32位整数哈希 */
 unsigned int dictIntHashFunction(unsigned int key)
 {
     key += ~(key << 15);
