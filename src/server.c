@@ -126,7 +126,7 @@ struct redisServer server; /* server global state */
  *    are not fast commands.
  */
 /*
- * 命令
+ * 命令 总共有 305 - 132 = 172（个）命令
  */
 struct redisCommand redisCommandTable[] = {
     {"get",getCommand,2,"rF",0,NULL,1,1,1,0,0},                     /* GET 获取命令 */
