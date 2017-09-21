@@ -53,30 +53,34 @@
 /* Macros */
 #define AE_NOTUSED(V) ((void) V)
 
-/* 声明一个对象 */
+/* 声明一个事件对象，预先声明，下面的定义的数据结构需要使用aeEventLoop,
+  但aeEventLoop内部结构也需要他们 */
 struct aeEventLoop;
 
 /* Types and data structures */
+/* 文件事件处理 */
 typedef void aeFileProc(struct aeEventLoop *eventLoop, int fd, void *clientData, int mask);
+/* 时间事件处理 */
 typedef int aeTimeProc(struct aeEventLoop *eventLoop, long long id, void *clientData);
+
 typedef void aeEventFinalizerProc(struct aeEventLoop *eventLoop, void *clientData);
 typedef void aeBeforeSleepProc(struct aeEventLoop *eventLoop);
 
 /* File event structure */
 /* 文件事件驱动对象 */
 typedef struct aeFileEvent {
-    int mask; /* one of AE_(READABLE|WRITABLE) */
-    aeFileProc *rfileProc;
-    aeFileProc *wfileProc;
-    void *clientData;
+    int mask; /* one of AE_(READABLE|WRITABLE) 可读 | 可写*/  
+    aeFileProc *rfileProc;  /* 可读 */
+    aeFileProc *wfileProc;  /* 可写 */
+    void *clientData;       /* 客户端数据 */
 } aeFileEvent;
 
 /* Time event structure */
 /* 时间时间驱动对象 */
 typedef struct aeTimeEvent {
-    long long id; /* time event identifier. */
-    long when_sec; /* seconds */
-    long when_ms; /* milliseconds */
+    long long id; /* time event identifier. */  /* 事件id */
+    long when_sec; /* seconds */                /* 时间（秒） */
+    long when_ms; /* milliseconds */            /* 时间（毫秒）*/
     aeTimeProc *timeProc;
     aeEventFinalizerProc *finalizerProc;
     void *clientData;
@@ -90,13 +94,14 @@ typedef struct aeFiredEvent {
 } aeFiredEvent;
 
 /* State of an event based program */
+/* 定义了aeEventLoop 时间结构 */
 typedef struct aeEventLoop {
-    int maxfd;   /* highest file descriptor currently registered */
-    int setsize; /* max number of file descriptors tracked */
-    long long timeEventNextId;
-    time_t lastTime;     /* Used to detect system clock skew */
-    aeFileEvent *events; /* Registered events */
-    aeFiredEvent *fired; /* Fired events */
+    int maxfd;   /* highest file descriptor currently registered */ /* 当前注册的最大文件句柄 */
+    int setsize; /* max number of file descriptors tracked */       /* 设置最多可以被追踪的文件句柄数 */
+    long long timeEventNextId;                                      /* 下个时间事件Id */
+    time_t lastTime;     /* Used to detect system clock skew */     /* 用来测试时间偏移(https://en.wikipedia.org/wiki/Clock_skew)*/
+    aeFileEvent *events; /* Registered events */        /* 注册的事件 */
+    aeFiredEvent *fired; /* Fired events */             /* 已经没有用到的事件 */
     aeTimeEvent *timeEventHead;
     int stop;
     void *apidata; /* This is used for polling API specific data */
@@ -104,6 +109,7 @@ typedef struct aeEventLoop {
 } aeEventLoop;
 
 /* Prototypes */
+/* 接口原型 */
 aeEventLoop *aeCreateEventLoop(int setsize);
 void aeDeleteEventLoop(aeEventLoop *eventLoop);
 void aeStop(aeEventLoop *eventLoop);

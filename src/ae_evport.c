@@ -63,6 +63,8 @@ static int evport_debug = 0;
  * and only until we enter aeApiPoll again (at which point we restore the
  * in-kernel association).
  */
+/* Solaris 的 Event Ports事件实现 */
+
 #define MAX_EVENT_BATCHSZ 512
 
 typedef struct aeApiState {
