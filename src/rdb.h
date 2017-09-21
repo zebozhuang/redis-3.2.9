@@ -39,6 +39,8 @@
 /* The current RDB version. When the format changes in a way that is no longer
  * backward compatible this number gets incremented. */
 /* 当前版本的RDB已经不向后兼容了 */
+/* 这个文件定义一些常量和接口申明 */
+
 #define RDB_VERSION 7
 
 /* Defines related to the dump file format. To store 32 bits lengths for short
@@ -79,6 +81,7 @@
 /* NOTE: WHEN ADDING NEW RDB TYPE, UPDATE rdbIsObjectType() BELOW */
 
 /* Object types for encoded objects. */
+/* RDB编码类型 */
 #define RDB_TYPE_HASH_ZIPMAP    9
 #define RDB_TYPE_LIST_ZIPLIST  10
 #define RDB_TYPE_SET_INTSET    11
