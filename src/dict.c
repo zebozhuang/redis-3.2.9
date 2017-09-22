@@ -134,6 +134,7 @@ uint32_t dictGetHashFunctionSeed(void) {
  * 2. It will not produce the same results on little-endian and big-endian
  *    machines.
  */
+/* 字典哈希函数 */
 unsigned int dictGenHashFunction(const void *key, int len) {
     /* 'm' and 'r' are mixing constants generated offline.
      They're not really 'magic', they just happen to work well.  */
@@ -178,6 +179,7 @@ unsigned int dictGenHashFunction(const void *key, int len) {
 }
 
 /* And a case insensitive hash function (based on djb hash) */
+/* 字典哈希函数 */
 unsigned int dictGenCaseHashFunction(const unsigned char *buf, int len) {
     unsigned int hash = (unsigned int)dict_hash_function_seed;
 
@@ -236,6 +238,7 @@ int dictResize(dict *d)
 }
 
 /* Expand or create the hash table */
+/* 扩张字典表 table, 放在d->ht[1]出，等重新哈希就可以换掉旧表ht[0] */
 int dictExpand(dict *d, unsigned long size)
 {
     dictht n; /* the new hash table */
@@ -277,7 +280,7 @@ int dictExpand(dict *d, unsigned long size)
  * guaranteed that this function will rehash even a single bucket, since it
  * will visit at max N*10 empty buckets in total, otherwise the amount of
  * work it does would be unbound and the function may block for a long time. */
-/* 字典重新哈希 */
+/* 字典重新哈希， n表示每次最多访问多少个bucket */
 int dictRehash(dict *d, int n) {
     int empty_visits = n*10; /* Max number of empty buckets to visit. */
     if (!dictIsRehashing(d)) return 0;
