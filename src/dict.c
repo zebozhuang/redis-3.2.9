@@ -74,7 +74,7 @@ void showBuckets(dictht ht) {
 }
 
 void show(dict *d) {
-    print("字典重新哈希，DEBUG...");
+    printf("字典重新哈希，DEBUG...");
     int j;
     if (d->rehashidx != -1) {
         printf("rhidx: ");
