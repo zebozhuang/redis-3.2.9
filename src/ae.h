@@ -100,33 +100,47 @@ typedef struct aeEventLoop {
     int setsize; /* max number of file descriptors tracked */       /* 设置最多可以被追踪的文件句柄数 */
     long long timeEventNextId;                                      /* 下个时间事件Id */
     time_t lastTime;     /* Used to detect system clock skew */     /* 用来测试时间偏移(https://en.wikipedia.org/wiki/Clock_skew)*/
-    aeFileEvent *events; /* Registered events */        /* 注册的事件 */
+    aeFileEvent *events; /* Registered events */        /* 注册的文件事件 */
     aeFiredEvent *fired; /* Fired events */             /* 已经没有用到的事件 */
-    aeTimeEvent *timeEventHead;
+    aeTimeEvent *timeEventHead;                         /* 时间事件 */
     int stop;
-    void *apidata; /* This is used for polling API specific data */
+    void *apidata; /* This is used for polling API specific data */ /* 给Polling API数据 */
     aeBeforeSleepProc *beforesleep;
 } aeEventLoop;
 
 /* Prototypes */
 /* 接口原型 */
+/* 创建事件EventLoop */
 aeEventLoop *aeCreateEventLoop(int setsize);
+/* 删除事件EventLoop */
 void aeDeleteEventLoop(aeEventLoop *eventLoop);
+/* 停止事件 */
 void aeStop(aeEventLoop *eventLoop);
+/* 创建文件事件 */
 int aeCreateFileEvent(aeEventLoop *eventLoop, int fd, int mask,
         aeFileProc *proc, void *clientData);
+/* 删除文件事件 */
 void aeDeleteFileEvent(aeEventLoop *eventLoop, int fd, int mask);
+/* 获取文件事件 */
 int aeGetFileEvents(aeEventLoop *eventLoop, int fd);
+/* 创建事件事件 */
 long long aeCreateTimeEvent(aeEventLoop *eventLoop, long long milliseconds,
         aeTimeProc *proc, void *clientData,
         aeEventFinalizerProc *finalizerProc);
+/* 删除事件事件 */
 int aeDeleteTimeEvent(aeEventLoop *eventLoop, long long id);
+/* 处理事件 */
 int aeProcessEvents(aeEventLoop *eventLoop, int flags);
+/* 等待 */
 int aeWait(int fd, int mask, long long milliseconds);
+/* ??? */
 void aeMain(aeEventLoop *eventLoop);
+/*获取API名字 */
 char *aeGetApiName(void);
 void aeSetBeforeSleepProc(aeEventLoop *eventLoop, aeBeforeSleepProc *beforesleep);
+/* 获取集合大小*/
 int aeGetSetSize(aeEventLoop *eventLoop);
+/* 重置集合大小 */
 int aeResizeSetSize(aeEventLoop *eventLoop, int setsize);
 
 #endif

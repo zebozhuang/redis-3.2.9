@@ -39,6 +39,7 @@ typedef struct aeApiState {
     fd_set _rfds, _wfds;
 } aeApiState;
 
+/* 创建, 并初始化 */
 static int aeApiCreate(aeEventLoop *eventLoop) {
     aeApiState *state = zmalloc(sizeof(aeApiState));
 
@@ -49,16 +50,19 @@ static int aeApiCreate(aeEventLoop *eventLoop) {
     return 0;
 }
 
+/* 重置大小，并没有真正的实现， 只是确保有足够的空间 */
 static int aeApiResize(aeEventLoop *eventLoop, int setsize) {
     /* Just ensure we have enough room in the fd_set type. */
     if (setsize >= FD_SETSIZE) return -1;
     return 0;
 }
 
+/* 释放apidata*/
 static void aeApiFree(aeEventLoop *eventLoop) {
     zfree(eventLoop->apidata);
 }
 
+/* 向eventLoop添加读写事件 */
 static int aeApiAddEvent(aeEventLoop *eventLoop, int fd, int mask) {
     aeApiState *state = eventLoop->apidata;
 
@@ -67,6 +71,7 @@ static int aeApiAddEvent(aeEventLoop *eventLoop, int fd, int mask) {
     return 0;
 }
 
+/* 向eventLoop里面删除事件 */
 static void aeApiDelEvent(aeEventLoop *eventLoop, int fd, int mask) {
     aeApiState *state = eventLoop->apidata;
 
@@ -74,6 +79,7 @@ static void aeApiDelEvent(aeEventLoop *eventLoop, int fd, int mask) {
     if (mask & AE_WRITABLE) FD_CLR(fd,&state->wfds);
 }
 
+/* EventLoop轮询 */
 static int aeApiPoll(aeEventLoop *eventLoop, struct timeval *tvp) {
     aeApiState *state = eventLoop->apidata;
     int retval, j, numevents = 0;
