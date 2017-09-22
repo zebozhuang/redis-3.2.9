@@ -74,6 +74,7 @@ void showBuckets(dictht ht) {
 }
 
 void show(dict *d) {
+    print("字典重新哈希，DEBUG...");
     int j;
     if (d->rehashidx != -1) {
         printf("rhidx: ");
@@ -98,7 +99,9 @@ static int _dictInit(dict *ht, dictType *type, void *privDataPtr);
 /* -------------------------- hash functions -------------------------------- */
 
 /* Thomas Wang's 32 bit Mix Function */
-/* Thomas Wang的 32位整数哈希 */
+/* 
+    Thomas Wang的 32位整数哈希 
+*/
 unsigned int dictIntHashFunction(unsigned int key)
 {
     key += ~(key << 15);
@@ -274,6 +277,7 @@ int dictExpand(dict *d, unsigned long size)
  * guaranteed that this function will rehash even a single bucket, since it
  * will visit at max N*10 empty buckets in total, otherwise the amount of
  * work it does would be unbound and the function may block for a long time. */
+/* 字典重新哈希 */
 int dictRehash(dict *d, int n) {
     int empty_visits = n*10; /* Max number of empty buckets to visit. */
     if (!dictIsRehashing(d)) return 0;
@@ -308,6 +312,7 @@ int dictRehash(dict *d, int n) {
     }
 
     /* Check if we already rehashed the whole table... */
+    /* 检查重新hash是否完成 */
     if (d->ht[0].used == 0) {
         zfree(d->ht[0].table);
         d->ht[0] = d->ht[1];
@@ -316,7 +321,7 @@ int dictRehash(dict *d, int n) {
         return 0;
     }
     /* 输出重哈希的字典, 通过这里我们可以看出，每次操作都会有一次rehash,　当d->rehashidx 不是　-1时 */ 
-    /* show(d);   */
+    show(d); 
     /* More to rehash... */
     return 1;
 }
