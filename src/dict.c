@@ -400,6 +400,7 @@ dictEntry *dictAddRaw(dict *d, void *key)
 
     /* Get the index of the new element, or -1 if
      * the element already exists. */
+    /*如何key已经存在，返回NULL */
     if ((index = _dictKeyIndex(d, key)) == -1)
         return NULL;
 
@@ -407,6 +408,7 @@ dictEntry *dictAddRaw(dict *d, void *key)
      * Insert the element in top, with the assumption that in a database
      * system it is more likely that recently added entries are accessed
      * more frequently. */
+    /* 加入数据时，是放在最前面的 */
     ht = dictIsRehashing(d) ? &d->ht[1] : &d->ht[0];
     entry = zmalloc(sizeof(*entry));
     entry->next = ht->table[index];
@@ -432,6 +434,7 @@ int dictReplace(dict *d, void *key, void *val)
     if (dictAdd(d, key, val) == DICT_OK)
         return 1;
     /* It already exists, get the entry */
+    /*如果Key相同的节点已经存在，则查找返回结点，并更新节点，顺便把原来节点的值给销毁 */
     entry = dictFind(d, key);
     /* Set the new value and free the old one. Note that it is important
      * to do that in this order, as the value may just be exactly the same
@@ -1029,6 +1032,7 @@ static int _dictKeyIndex(dict *d, const void *key)
     if (_dictExpandIfNeeded(d) == DICT_ERR)
         return -1;
     /* Compute the key hash value */
+    /*计算key的哈希值, 并在两张表ht[0], ht[1]里面查找, 如果有相同的key，返回-1，否则返回表的索引值 */
     h = dictHashKey(d, key);
     for (table = 0; table <= 1; table++) {
         idx = h & d->ht[table].sizemask;
