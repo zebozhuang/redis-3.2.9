@@ -78,6 +78,7 @@ static inline char sdsReqType(size_t string_size) {
  * You can print the string with printf() as there is an implicit \0 at the
  * end of the string. However the string is binary safe and can contain
  * \0 characters in the middle, as the length is stored in the sds header. */
+/* 按长度创建字符串*/
 sds sdsnewlen(const void *init, size_t initlen) {
     void *sh;
     sds s;
@@ -136,17 +137,20 @@ sds sdsnewlen(const void *init, size_t initlen) {
 
 /* Create an empty (zero length) sds string. Even in this case the string
  * always has an implicit null term. */
+/* 创建空的字符串 */
 sds sdsempty(void) {
     return sdsnewlen("",0);
 }
 
 /* Create a new sds string starting from a null terminated C string. */
+/* 给定字符串创建字符串 */
 sds sdsnew(const char *init) {
     size_t initlen = (init == NULL) ? 0 : strlen(init);
     return sdsnewlen(init, initlen);
 }
 
 /* Duplicate an sds string. */
+/* 复制字符串 */
 sds sdsdup(const sds s) {
     return sdsnewlen(s, sdslen(s));
 }
