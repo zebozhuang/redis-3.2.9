@@ -1,3 +1,4 @@
+/* 字符串和字符串的Map映射 */
 /* String -> String Map data structure optimized for size.
  * This file implements a data structure mapping strings to other strings
  * implementing an O(n) lookup data structure designed to be very memory
