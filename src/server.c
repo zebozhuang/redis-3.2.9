@@ -152,13 +152,13 @@ struct redisCommand redisCommandTable[] = {
     {"rpushx",rpushxCommand,3,"wmF",0,NULL,1,1,1,0,0},              /* RPUSHX 如果key存在，则添加元素到对尾，否则，不操作*/
     {"lpushx",lpushxCommand,3,"wmF",0,NULL,1,1,1,0,0},              /* LPUSHX 如果key存在，则添加元素到头部，否则，不操作*/
     {"linsert",linsertCommand,5,"wm",0,NULL,1,1,1,0,0},             /* LINSERT 如果KEY, 把元素插在privot的前后或者后面: LINSERT key BEFORE|AFTER pivot value*/
-    {"rpop",rpopCommand,2,"wF",0,NULL,1,1,1,0,0},                   /* 从队尾pop出数据 */
-    {"lpop",lpopCommand,2,"wF",0,NULL,1,1,1,0,0},                   /* 从队头pop出数据 */
-    {"brpop",brpopCommand,-3,"ws",0,NULL,1,1,1,0,0},
-    {"brpoplpush",brpoplpushCommand,4,"wms",0,NULL,1,2,1,0,0},
-    {"blpop",blpopCommand,-3,"ws",0,NULL,1,-2,1,0,0},
-    {"llen",llenCommand,2,"rF",0,NULL,1,1,1,0,0},
-    {"lindex",lindexCommand,3,"r",0,NULL,1,1,1,0,0},
+    {"rpop",rpopCommand,2,"wF",0,NULL,1,1,1,0,0},                   /* RPOP 从队尾pop出数据 */
+    {"lpop",lpopCommand,2,"wF",0,NULL,1,1,1,0,0},                   /* LPOP 从队头pop出数据 */
+    {"brpop",brpopCommand,-3,"ws",0,NULL,1,1,1,0,0},                /* BRPOP 阻塞阻塞式弹出,如果没有元素，一直会阻塞到有元素 */
+    {"brpoplpush",brpoplpushCommand,4,"wms",0,NULL,1,2,1,0,0},      /* BRPOPLPUSH 阻塞式弹出和推入 */
+    {"blpop",blpopCommand,-3,"ws",0,NULL,1,-2,1,0,0},               /* BLPOP 同BRPOP */
+    {"llen",llenCommand,2,"rF",0,NULL,1,1,1,0,0},                   /* LLEN 返回列表长度 */
+    {"lindex",lindexCommand,3,"r",0,NULL,1,1,1,0,0},                /* LINDDEX 返回列表下标为index的元素 */
     {"lset",lsetCommand,4,"wm",0,NULL,1,1,1,0,0},
     {"lrange",lrangeCommand,4,"r",0,NULL,1,1,1,0,0},
     {"ltrim",ltrimCommand,4,"w",0,NULL,1,1,1,0,0},
