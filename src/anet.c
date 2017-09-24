@@ -48,6 +48,7 @@
 
 #include "anet.h"
 
+/* 错误信息打印 */
 static void anetSetError(char *err, const char *fmt, ...)
 {
     va_list ap;
@@ -58,6 +59,7 @@ static void anetSetError(char *err, const char *fmt, ...)
     va_end(ap);
 }
 
+/* 设置socket是否使用阻塞(block) */
 int anetSetBlock(char *err, int fd, int non_block) {
     int flags;
 
@@ -81,10 +83,12 @@ int anetSetBlock(char *err, int fd, int non_block) {
     return ANET_OK;
 }
 
+/* 设置Socket使用非阻塞 */
 int anetNonBlock(char *err, int fd) {
     return anetSetBlock(err,fd,1);
 }
 
+/* 设置Socket使用阻塞 */
 int anetBlock(char *err, int fd) {
     return anetSetBlock(err,fd,0);
 }
@@ -92,6 +96,7 @@ int anetBlock(char *err, int fd) {
 /* Set TCP keep alive option to detect dead peers. The interval option
  * is only used for Linux as we are using Linux-specific APIs to set
  * the probe send time, interval, and count. */
+/* 设置Keep Alive */
 int anetKeepAlive(char *err, int fd, int interval)
 {
     int val = 1;
@@ -138,6 +143,7 @@ int anetKeepAlive(char *err, int fd, int interval)
     return ANET_OK;
 }
 
+/* 设置不延迟 */
 static int anetSetTcpNoDelay(char *err, int fd, int val)
 {
     if (setsockopt(fd, IPPROTO_TCP, TCP_NODELAY, &val, sizeof(val)) == -1)
