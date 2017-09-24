@@ -1,3 +1,4 @@
+/* TCP 连接 */
 /* anet.c -- Basic TCP socket stuff made a bit less boring
  *
  * Copyright (c) 2006-2012, Salvatore Sanfilippo <antirez at gmail dot com>
