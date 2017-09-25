@@ -273,6 +273,7 @@ robj *dbUnshareStringValue(redisDb *db, robj *key, robj *o) {
     return o;
 }
 
+/* 清空数据库 */
 long long emptyDb(void(callback)(void*)) {
     int j;
     long long removed = 0;
@@ -286,6 +287,7 @@ long long emptyDb(void(callback)(void*)) {
     return removed;
 }
 
+/* 切换db */
 int selectDb(client *c, int id) {
     if (id < 0 || id >= server.dbnum)
         return C_ERR;
