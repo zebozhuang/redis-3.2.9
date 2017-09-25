@@ -192,6 +192,7 @@ void setKey(redisDb *db, robj *key, robj *val) {
     signalModifiedKey(db,key);
 }
 
+/* KEY是否存在, 调用Dict查找，并返回布尔值 */
 int dbExists(redisDb *db, robj *key) {
     return dictFind(db->dict,key->ptr) != NULL;
 }
@@ -361,6 +362,7 @@ void delCommand(client *c) {
 
 /* EXISTS key1 key2 ... key_N.
  * Return value is the number of keys existing. */
+/* EXISTS 命令 */
 void existsCommand(client *c) {
     long long count = 0;
     int j;
@@ -372,6 +374,7 @@ void existsCommand(client *c) {
     addReplyLongLong(c,count);
 }
 
+/* SELECT 命令 */
 void selectCommand(client *c) {
     long id;
 
