@@ -507,14 +507,14 @@ struct evictionPoolEntry {
  * database. The database number is the 'id' field in the structure. */
 /*　RedisDb 数据库 */
 typedef struct redisDb {
-    dict *dict;                 /* The keyspace for this DB */
-    dict *expires;              /* Timeout of keys with a timeout set */
-    dict *blocking_keys;        /* Keys with clients waiting for data (BLPOP) */
+    dict *dict;                 /* The keyspace for this DB */                   /* 定义数据库字典 */
+    dict *expires;              /* Timeout of keys with a timeout set */         /* 定义字典的过期时间 */
+    dict *blocking_keys;        /* Keys with clients waiting for data (BLPOP) */ /* 当前客户端阻塞的Key */
     dict *ready_keys;           /* Blocked keys that received a PUSH */
     dict *watched_keys;         /* WATCHED keys for MULTI/EXEC CAS */
     struct evictionPoolEntry *eviction_pool;    /* Eviction pool of keys */
-    int id;                     /* Database ID */
-    long long avg_ttl;          /* Average TTL, just for stats */
+    int id;                     /* Database ID */                               /* 当前数据库的id */
+    long long avg_ttl;          /* Average TTL, just for stats */               /* 平均ttl时间 */
 } redisDb;
 
 /* Client MULTI/EXEC state */
@@ -572,7 +572,7 @@ typedef struct readyList {
 /* 客户端是一个带有唯一id的链表, 每个客户端都有一个状态 */
 typedef struct client {
     uint64_t id;            /* Client incremental unique ID. 增长的唯一id */
-    int fd;                 /* Client socket. */
+    int fd;                 /* Client socket. */         /* 客户端的socket句柄 */   
     redisDb *db;            /* Pointer to currently SELECTed DB. 指向当前的所选的db */
     int dictid;             /* ID of the currently SELECTed DB. 当前的db的id【0-15】*/
     robj *name;             /* As set by CLIENT SETNAME. 设置客户端的名字 */
@@ -715,33 +715,33 @@ struct clusterState;
 
 struct redisServer {
     /* General */
-    pid_t pid;                  /* Main process pid. */
-    char *configfile;           /* Absolute config file path, or NULL */
-    char *executable;           /* Absolute executable file path. */
-    char **exec_argv;           /* Executable argv vector (copy). */
-    int hz;                     /* serverCron() calls frequency in hertz */
-    redisDb *db;                /* Redis db */
-    dict *commands;             /* Command table */
-    dict *orig_commands;        /* Command table before command renaming. */
-    aeEventLoop *el;
-    unsigned lruclock:LRU_BITS; /* Clock for LRU eviction */
-    int shutdown_asap;          /* SHUTDOWN needed ASAP */
-    int activerehashing;        /* Incremental rehash in serverCron() */
-    char *requirepass;          /* Pass for AUTH command, or NULL */
-    char *pidfile;              /* PID file path */
+    pid_t pid;                  /* Main process pid. */ /* 主进程进程id */
+    char *configfile;           /* Absolute config file path, or NULL */ /* 配置的绝对路径 */
+    char *executable;           /* Absolute executable file path. */     /* 可执行的绝对路劲 */
+    char **exec_argv;           /* Executable argv vector (copy). */     /* 执行的参数 */
+    int hz;                     /* serverCron() calls frequency in hertz */ /* 服务器的频率 */
+    redisDb *db;                /* Redis db */                              /* Redis数据库 */       
+    dict *commands;             /* Command table */                         /* 执行的命令 */
+    dict *orig_commands;        /* Command table before command renaming. */ /* 保存原来的执行命令，和后来动态添加或者重命名的命令区分 */
+    aeEventLoop *el;                                                        /* EventLoop IO 复用监听 */
+    unsigned lruclock:LRU_BITS; /* Clock for LRU eviction */                /* LRU 回收时钟 */
+    int shutdown_asap;          /* SHUTDOWN needed ASAP */                  /* 关机asap? */
+    int activerehashing;        /* Incremental rehash in serverCron() */    /* 重哈希 */
+    char *requirepass;          /* Pass for AUTH command, or NULL */        /* 认证 */
+    char *pidfile;              /* PID file path */                         /* pidfile文件 */
     int arch_bits;              /* 32 or 64 depending on sizeof(long) */
-    int cronloops;              /* Number of times the cron function run */
+    int cronloops;              /* Number of times the cron function run */  /* 定时跑的次数 */
     char runid[CONFIG_RUN_ID_SIZE+1];  /* ID always different at every exec. */
-    int sentinel_mode;          /* True if this instance is a Sentinel. */
+    int sentinel_mode;          /* True if this instance is a Sentinel. */  /* 是否为哨兵 */
     /* Networking */
-    int port;                   /* TCP listening port */
-    int tcp_backlog;            /* TCP listen() backlog */
-    char *bindaddr[CONFIG_BINDADDR_MAX]; /* Addresses we should bind to */
-    int bindaddr_count;         /* Number of addresses in server.bindaddr[] */
-    char *unixsocket;           /* UNIX socket path */
-    mode_t unixsocketperm;      /* UNIX socket permission */
-    int ipfd[CONFIG_BINDADDR_MAX]; /* TCP socket file descriptors */
-    int ipfd_count;             /* Used slots in ipfd[] */
+    int port;                   /* TCP listening port */                    /* 监听的端口 */
+    int tcp_backlog;            /* TCP listen() backlog */                  /* 最多监听的客户端数 */
+    char *bindaddr[CONFIG_BINDADDR_MAX]; /* Addresses we should bind to */  /* 绑定地址 */
+    int bindaddr_count;         /* Number of addresses in server.bindaddr[] */  /*绑定地址的个数 */
+    char *unixsocket;           /* UNIX socket path */                      /* unixsocket */
+    mode_t unixsocketperm;      /* UNIX socket permission */                /* socket权限 */
+    int ipfd[CONFIG_BINDADDR_MAX]; /* TCP socket file descriptors */        /* TCP 文件描述符 */
+    int ipfd_count;             /* Used slots in ipfd[] */                  /* TCP 文件描述符个数 */
     int sofd;                   /* Unix socket file descriptor */
     int cfd[CONFIG_BINDADDR_MAX];/* Cluster bus listening socket 集群监听的socket */
     int cfd_count;              /* Used slots in cfd[] */
