@@ -31,7 +31,7 @@
 /*-----------------------------------------------------------------------------
  * Sorted set API
  *----------------------------------------------------------------------------*/
-
+/* 有序集合列表 */
 /* ZSETs are ordered sets using two data structures to hold the same elements
  * in order to get O(log(N)) INSERT and REMOVE operations into a sorted
  * data structure.
