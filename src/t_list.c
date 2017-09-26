@@ -32,7 +32,7 @@
 /*-----------------------------------------------------------------------------
  * List API
  *----------------------------------------------------------------------------*/
-
+/* 列表API */
 /* The function pushes an element to the specified list object 'subject',
  * at head or tail position as specified by 'where'.
  *
@@ -193,6 +193,7 @@ void listTypeConvert(robj *subject, int enc) {
 /*-----------------------------------------------------------------------------
  * List Commands
  *----------------------------------------------------------------------------*/
+/* 列表命令 */
 
 void pushGenericCommand(client *c, int where) {
     int j, waiting = 0, pushed = 0;
