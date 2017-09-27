@@ -33,15 +33,18 @@
  * Set Commands
  *----------------------------------------------------------------------------*/
 /* 集合指令 */
+
+/* 合并不同集合的元素 */
 void sunionDiffGenericCommand(client *c, robj **setkeys, int setnum,
                               robj *dstkey, int op);
 
 /* Factory method to return a set that *can* hold "value". When the object has
  * an integer-encodable value, an intset will be returned. Otherwise a regular
  * hash table. */
+/* 创建一个集合对象, 如果是整数，那么返回一个整数的集合，否则，返回一个hash表 */
 robj *setTypeCreate(robj *value) {
     if (isObjectRepresentableAsLongLong(value,NULL) == C_OK)
-        return createIntsetObject();
+        return createIntsetObject();    // 返回一个整数集合
     return createSetObject();
 }
 
@@ -268,7 +271,7 @@ void setTypeConvert(robj *setobj, int enc) {
         serverPanic("Unsupported set conversion");
     }
 }
-
+/* 集合添加元素 */
 void saddCommand(client *c) {
     robj *set;
     int j, added = 0;

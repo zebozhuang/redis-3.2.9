@@ -44,6 +44,7 @@ void slotToKeyFlush(void);
 /* Low level key lookup API, not actually called directly from commands
  * implementations that should instead rely on lookupKeyRead(),
  * lookupKeyWrite() and lookupKeyReadWithFlags(). */
+/* 低级查找键API */
 robj *lookupKey(redisDb *db, robj *key, int flags) {
     dictEntry *de = dictFind(db->dict,key->ptr);
     if (de) {

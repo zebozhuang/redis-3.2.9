@@ -195,6 +195,7 @@ robj *createZiplistObject(void) {
     return o;
 }
 
+/* 创建字典类型集合对象 */
 robj *createSetObject(void) {
     dict *d = dictCreate(&setDictType,NULL);
     robj *o = createObject(OBJ_SET,d);
@@ -202,9 +203,10 @@ robj *createSetObject(void) {
     return o;
 }
 
+/* 创建一个整数集合对象 */
 robj *createIntsetObject(void) {
-    intset *is = intsetNew();
-    robj *o = createObject(OBJ_SET,is);
+    intset *is = intsetNew();       /* 创建整数集合 */
+    robj *o = createObject(OBJ_SET,is); /* 赋予编码 */
     o->encoding = OBJ_ENCODING_INTSET;
     return o;
 }
@@ -376,6 +378,7 @@ robj *tryObjectEncoding(robj *o) {
     /* It's not safe to encode shared objects: shared objects can be shared
      * everywhere in the "object space" of Redis and may end in places where
      * they are not handled. We handle them only as values in the keyspace. */
+    /* 如果被其他对象所引用，那么就不需要加编码 */
      if (o->refcount > 1) return o;
 
     /* Check if we can represent this string as a long integer.
