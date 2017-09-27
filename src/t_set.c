@@ -55,12 +55,13 @@ robj *setTypeCreate(robj *value) {
  * returned, otherwise the new element is added and 1 is returned. */
 int setTypeAdd(robj *subject, robj *value) {
     long long llval;
+    /* 判断是Hash表类型的集合 */
     if (subject->encoding == OBJ_ENCODING_HT) {
         if (dictAdd(subject->ptr,value,NULL) == DICT_OK) {
             incrRefCount(value);
             return 1;
         }
-    } else if (subject->encoding == OBJ_ENCODING_INTSET) {
+    } else if (subject->encoding == OBJ_ENCODING_INTSET) {  /* 整数类型集合 */
         if (isObjectRepresentableAsLongLong(value,&llval) == C_OK) {
             uint8_t success = 0;
             subject->ptr = intsetAdd(subject->ptr,llval,&success);
