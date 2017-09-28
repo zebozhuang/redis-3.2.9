@@ -89,14 +89,15 @@ int setTypeAdd(robj *subject, robj *value) {
     return 0;
 }
 
+/* 按集合类型删除集合元素 */
 int setTypeRemove(robj *setobj, robj *value) {
     long long llval;
-    if (setobj->encoding == OBJ_ENCODING_HT) {
+    if (setobj->encoding == OBJ_ENCODING_HT) {  /*哈希表类型的集合*/
         if (dictDelete(setobj->ptr,value) == DICT_OK) {
             if (htNeedsResize(setobj->ptr)) dictResize(setobj->ptr);
             return 1;
         }
-    } else if (setobj->encoding == OBJ_ENCODING_INTSET) {
+    } else if (setobj->encoding == OBJ_ENCODING_INTSET) {   /*整数集合*/
         if (isObjectRepresentableAsLongLong(value,&llval) == C_OK) {
             int success;
             setobj->ptr = intsetRemove(setobj->ptr,llval,&success);
@@ -108,6 +109,7 @@ int setTypeRemove(robj *setobj, robj *value) {
     return 0;
 }
 
+/* 判断元素是否在集合内 */
 int setTypeIsMember(robj *subject, robj *value) {
     long long llval;
     if (subject->encoding == OBJ_ENCODING_HT) {
@@ -122,6 +124,7 @@ int setTypeIsMember(robj *subject, robj *value) {
     return 0;
 }
 
+/* 获取集合迭代器 */
 setTypeIterator *setTypeInitIterator(robj *subject) {
     setTypeIterator *si = zmalloc(sizeof(setTypeIterator));
     si->subject = subject;
@@ -136,6 +139,7 @@ setTypeIterator *setTypeInitIterator(robj *subject) {
     return si;
 }
 
+/* 释放集合迭代器 */
 void setTypeReleaseIterator(setTypeIterator *si) {
     if (si->encoding == OBJ_ENCODING_HT)
         dictReleaseIterator(si->di);
@@ -157,6 +161,8 @@ void setTypeReleaseIterator(setTypeIterator *si) {
  * When there are no longer elements -1 is returned.
  * Returned objects ref count is not incremented, so this function is
  * copy on write friendly. */
+
+/* 集合迭代器的下个对象, 并返回迭代器类型 */
 int setTypeNext(setTypeIterator *si, robj **objele, int64_t *llele) {
     if (si->encoding == OBJ_ENCODING_HT) {
         dictEntry *de = dictNext(si->di);
@@ -180,6 +186,7 @@ int setTypeNext(setTypeIterator *si, robj **objele, int64_t *llele) {
  *
  * This function is the way to go for write operations where COW is not
  * an issue as the result will be anyway of incrementing the ref count. */
+/* 获取迭代器的下个元素，是setTypeNext的同等接口，返回迭代元素，比较友好 */
 robj *setTypeNextObject(setTypeIterator *si) {
     int64_t intele;
     robj *objele;
@@ -194,7 +201,7 @@ robj *setTypeNextObject(setTypeIterator *si) {
             incrRefCount(objele);
             return objele;
         default:
-            serverPanic("Unsupported encoding");
+            serverPanic("Unsupported encoding"); /* 不支持编码类型 */
     }
     return NULL; /* just to suppress warnings */
 }
@@ -216,6 +223,7 @@ robj *setTypeNextObject(setTypeIterator *si) {
  * When an object is returned (the set was a real set) the ref count
  * of the object is not incremented so this function can be considered
  * copy on write friendly. */
+/* 获取集合中的任意元素 */
 int setTypeRandomElement(robj *setobj, robj **objele, int64_t *llele) {
     if (setobj->encoding == OBJ_ENCODING_HT) {
         dictEntry *de = dictGetRandomKey(setobj->ptr);
@@ -230,6 +238,7 @@ int setTypeRandomElement(robj *setobj, robj **objele, int64_t *llele) {
     return setobj->encoding;
 }
 
+/* 获取集合大小 */
 unsigned long setTypeSize(robj *subject) {
     if (subject->encoding == OBJ_ENCODING_HT) {
         return dictSize((dict*)subject->ptr);
@@ -243,10 +252,11 @@ unsigned long setTypeSize(robj *subject) {
 /* Convert the set to specified encoding. The resulting dict (when converting
  * to a hash table) is presized to hold the number of elements in the original
  * set. */
+/* 整数集合转换为hash table的集合 */
 void setTypeConvert(robj *setobj, int enc) {
     setTypeIterator *si;
     serverAssertWithInfo(NULL,setobj,setobj->type == OBJ_SET &&
-                             setobj->encoding == OBJ_ENCODING_INTSET);
+                             setobj->encoding == OBJ_ENCODING_INTSET); /* 确保当前集合是整数集合 */
 
     if (enc == OBJ_ENCODING_HT) {
         int64_t intele;
@@ -254,6 +264,7 @@ void setTypeConvert(robj *setobj, int enc) {
         robj *element;
 
         /* Presize the dict to avoid rehashing */
+        /* 扩展dict,以免再rehashing */
         dictExpand(d,intsetLen(setobj->ptr));
 
         /* To add the elements we extract integers and create redis objects */
@@ -307,6 +318,7 @@ void sremCommand(client *c) {
     if ((set = lookupKeyWriteOrReply(c,c->argv[1],shared.czero)) == NULL ||
         checkType(c,set,OBJ_SET)) return;
 
+    /* 从集合里面删除 */
     for (j = 2; j < c->argc; j++) {
         if (setTypeRemove(set,c->argv[j])) {
             deleted++;
@@ -318,7 +330,7 @@ void sremCommand(client *c) {
         }
     }
     if (deleted) {
-        signalModifiedKey(c->db,c->argv[1]);
+        signalModifiedKey(c->db,c->argv[1]);  /* 跟踪这个Key, 判断是否被删除，如果没有，给该client表上dirty_key的标志 */
         notifyKeyspaceEvent(NOTIFY_SET,"srem",c->argv[1],c->db->id);
         if (keyremoved)
             notifyKeyspaceEvent(NOTIFY_GENERIC,"del",c->argv[1],
