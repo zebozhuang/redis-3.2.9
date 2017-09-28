@@ -311,6 +311,7 @@ void saddCommand(client *c) {
     addReplyLongLong(c,added);
 }
 
+/* 删除集合元素: 一个以上元素 */
 void sremCommand(client *c) {
     robj *set;
     int j, deleted = 0, keyremoved = 0;
@@ -340,6 +341,7 @@ void sremCommand(client *c) {
     addReplyLongLong(c,deleted);
 }
 
+/* 移动元素：从一个集合到另一个集合 */
 void smoveCommand(client *c) {
     robj *srcset, *dstset, *ele;
     srcset = lookupKeyWrite(c->db,c->argv[1]);
@@ -354,6 +356,7 @@ void smoveCommand(client *c) {
 
     /* If the source key has the wrong type, or the destination key
      * is set and has the wrong type, return with an error. */
+    /* 检查原集合和目标集合 */
     if (checkType(c,srcset,OBJ_SET) ||
         (dstset && checkType(c,dstset,OBJ_SET))) return;
 
@@ -394,6 +397,7 @@ void smoveCommand(client *c) {
     addReply(c,shared.cone);
 }
 
+/* 判断元素是否在集合内 */
 void sismemberCommand(client *c) {
     robj *set;
 
@@ -407,6 +411,7 @@ void sismemberCommand(client *c) {
         addReply(c,shared.czero);
 }
 
+/* 返回集合大小：多少个元素 */
 void scardCommand(client *c) {
     robj *o;
 
@@ -424,6 +429,7 @@ void scardCommand(client *c) {
  * implementation for more info. */
 #define SPOP_MOVE_STRATEGY_MUL 5
 
+/* Pop元素 */
 void spopWithCountCommand(client *c) {
     long l;
     unsigned long count, size;
@@ -440,6 +446,7 @@ void spopWithCountCommand(client *c) {
 
     /* Make sure a key with the name inputted exists, and that it's type is
      * indeed a set. Otherwise, return nil */
+    /* 查看集合是否存在并检查类型 */
     if ((set = lookupKeyReadOrReply(c,c->argv[1],shared.emptymultibulk))
         == NULL || checkType(c,set,OBJ_SET)) return;
 
@@ -450,6 +457,7 @@ void spopWithCountCommand(client *c) {
         return;
     }
 
+    /* 获取集合大小 */
     size = setTypeSize(set);
 
     /* Generate an SPOP keyspace notification */
@@ -575,6 +583,7 @@ void spopWithCountCommand(client *c) {
     server.dirty++;
 }
 
+/* Pop出元素 */
 void spopCommand(client *c) {
     robj *set, *ele, *aux;
     int64_t llele;
@@ -635,6 +644,7 @@ void spopCommand(client *c) {
  * implementation for more info. */
 #define SRANDMEMBER_SUB_STRATEGY_MUL 3
 
+/* 任意取出count个元素 */
 void srandmemberWithCountCommand(client *c) {
     long l;
     unsigned long count, size;
@@ -768,6 +778,7 @@ void srandmemberWithCountCommand(client *c) {
     }
 }
 
+/*  取出任一元素 */
 void srandmemberCommand(client *c) {
     robj *set, *ele;
     int64_t llele;
@@ -792,6 +803,7 @@ void srandmemberCommand(client *c) {
     }
 }
 
+/* 按集合大小排序 */
 int qsortCompareSetsByCardinality(const void *s1, const void *s2) {
     return setTypeSize(*(robj**)s1)-setTypeSize(*(robj**)s2);
 }
@@ -804,6 +816,7 @@ int qsortCompareSetsByRevCardinality(const void *s1, const void *s2) {
     return  (o2 ? setTypeSize(o2) : 0) - (o1 ? setTypeSize(o1) : 0);
 }
 
+/* 求集合交集 */
 void sinterGenericCommand(client *c, robj **setkeys,
                           unsigned long setnum, robj *dstkey) {
     robj **sets = zmalloc(sizeof(robj*)*setnum);
@@ -940,10 +953,12 @@ void sinterGenericCommand(client *c, robj **setkeys,
     zfree(sets);
 }
 
+/* 求集合交集 */
 void sinterCommand(client *c) {
     sinterGenericCommand(c,c->argv+1,c->argc-1,NULL);
 }
 
+/* 求集合交集，并存在另一个集合 */
 void sinterstoreCommand(client *c) {
     sinterGenericCommand(c,c->argv+2,c->argc-2,c->argv[1]);
 }
@@ -952,6 +967,7 @@ void sinterstoreCommand(client *c) {
 #define SET_OP_DIFF 1
 #define SET_OP_INTER 2
 
+/* 求并集 */
 void sunionDiffGenericCommand(client *c, robj **setkeys, int setnum,
                               robj *dstkey, int op) {
     robj **sets = zmalloc(sizeof(robj*)*setnum);
@@ -1111,22 +1127,27 @@ void sunionDiffGenericCommand(client *c, robj **setkeys, int setnum,
     zfree(sets);
 }
 
+/* 求并集 */
 void sunionCommand(client *c) {
     sunionDiffGenericCommand(c,c->argv+1,c->argc-1,NULL,SET_OP_UNION);
 }
 
+/* 求并集并保存在另个集合里面 */
 void sunionstoreCommand(client *c) {
     sunionDiffGenericCommand(c,c->argv+2,c->argc-2,c->argv[1],SET_OP_UNION);
 }
 
+/* 求差集 */
 void sdiffCommand(client *c) {
     sunionDiffGenericCommand(c,c->argv+1,c->argc-1,NULL,SET_OP_DIFF);
 }
 
+/* 求差集并保存 */
 void sdiffstoreCommand(client *c) {
     sunionDiffGenericCommand(c,c->argv+2,c->argc-2,c->argv[1],SET_OP_DIFF);
 }
 
+/* 扫描集合 */
 void sscanCommand(client *c) {
     robj *set;
     unsigned long cursor;
