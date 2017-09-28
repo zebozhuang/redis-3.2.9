@@ -628,6 +628,11 @@ struct saveparam {
     int changes;
 };
 
+/*
+    shared 共享变量:
+    在Redis服务器初始化的时候，便将一些常用的字符串变量创建好，免去Redis在线运行
+    时创建字符串的必要性，如在Redis通讯协议里面，会较多使用"\r\n"
+*/
 struct sharedObjectsStruct {
     robj *crlf, *ok, *err, *emptybulk, *czero, *cone, *cnegone, *pong, *space,
     *colon, *nullbulk, *nullmultibulk, *queued,

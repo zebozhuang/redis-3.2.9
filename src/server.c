@@ -161,7 +161,7 @@ struct redisCommand redisCommandTable[] = {
     {"lindex",lindexCommand,3,"r",0,NULL,1,1,1,0,0},                /* LINDDEX 返回列表下标为index的元素 */
     {"lset",lsetCommand,4,"wm",0,NULL,1,1,1,0,0},                   /* LSET 设置列表第N个元素的值 */
     {"lrange",lrangeCommand,4,"r",0,NULL,1,1,1,0,0},                /* LRANGE 按范围获取列表值 */
-    {"ltrim",ltrimCommand,4,"w",0,NULL,1,1,1,0,0},
+    {"ltrim",ltrimCommand,4,"w",0,NULL,1,1,1,0,0},                  
     {"lrem",lremCommand,4,"w",0,NULL,1,1,1,0,0},
     {"rpoplpush",rpoplpushCommand,3,"wm",0,NULL,1,2,1,0,0},
     {"sadd",saddCommand,-3,"wmF",0,NULL,1,1,1,0,0},
@@ -1381,6 +1381,7 @@ void beforeSleep(struct aeEventLoop *eventLoop) {
 
 /* =========================== Server initialization ======================== */
 
+/* 初始化创建变量 shared */
 void createSharedObjects(void) {
     int j;
 
