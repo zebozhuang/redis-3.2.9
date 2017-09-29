@@ -33,7 +33,7 @@
 /*-----------------------------------------------------------------------------
  * String Commands
  *----------------------------------------------------------------------------*/
-
+/* 字符串指令 */
 static int checkStringLength(client *c, long long size) {
     if (size > 512*1024*1024) {
         addReplyError(c,"string exceeds maximum allowed size (512MB)");
@@ -93,6 +93,7 @@ void setGenericCommand(client *c, int flags, robj *key, robj *val, robj *expire,
 }
 
 /* SET key value [NX] [XX] [EX <seconds>] [PX <milliseconds>] */
+/* SET 命令,可以添加过期时间 */
 void setCommand(client *c) {
     int j;
     robj *expire = NULL;
@@ -139,11 +140,13 @@ void setCommand(client *c) {
     setGenericCommand(c,flags,c->argv[1],c->argv[2],expire,unit,NULL,NULL);
 }
 
+/* SETNX命令，如果Key不存在，那么就设置 */
 void setnxCommand(client *c) {
     c->argv[2] = tryObjectEncoding(c->argv[2]);
     setGenericCommand(c,OBJ_SET_NX,c->argv[1],c->argv[2],NULL,0,shared.cone,shared.czero);
 }
 
+/* SETEX命令，如果Key存在，那么就设置*/
 void setexCommand(client *c) {
     c->argv[3] = tryObjectEncoding(c->argv[3]);
     setGenericCommand(c,OBJ_SET_NO_FLAGS,c->argv[1],c->argv[3],c->argv[2],UNIT_SECONDS,NULL,NULL);
@@ -169,6 +172,7 @@ int getGenericCommand(client *c) {
     }
 }
 
+/* 获取指令 */
 void getCommand(client *c) {
     getGenericCommand(c);
 }
