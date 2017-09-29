@@ -12,9 +12,13 @@
 # Dependencies are stored in the Makefile.dep file. To rebuild this file
 # Just use 'make dep', but this is only needed by developers.
 
+# 执行发布脚本
 release_hdr := $(shell sh -c './mkreleasehdr.sh')
+# 机器名字
 uname_S := $(shell sh -c 'uname -s 2>/dev/null || echo not')
+# 优化级别
 OPTIMIZATION?=-O2
+# 依赖
 DEPENDENCY_TARGETS=hiredis linenoise lua geohash-int
 
 # Default settings
@@ -22,11 +26,13 @@ STD=-std=c99 -pedantic -DREDIS_STATIC=''
 WARN=-Wall -W
 OPT=$(OPTIMIZATION)
 
+# 安装路径
 PREFIX?=/usr/local
 INSTALL_BIN=$(PREFIX)/bin
 INSTALL=install
 
 # Default allocator
+# 如果机器是Linux，使用jemalloc库,否则使用libc库
 ifeq ($(uname_S),Linux)
 	MALLOC=jemalloc
 else
