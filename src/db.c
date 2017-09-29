@@ -307,7 +307,7 @@ int selectDb(client *c, int id) {
  *
  * Every time a DB is flushed the function signalFlushDb() is called.
  *----------------------------------------------------------------------------*/
-
+/* 如果数据库的key被修改，都会调用signalModifiedKey*/
 void signalModifiedKey(redisDb *db, robj *key) {
     touchWatchedKey(db,key);
 }
