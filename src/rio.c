@@ -56,6 +56,7 @@
 #include "server.h"
 
 /* ------------------------- Buffer I/O implementation ----------------------- */
+/* 缓存 IO 的实现 */
 
 /* Returns 1 or 0 for success/failure. */
 static size_t rioBufferWrite(rio *r, const void *buf, size_t len) {

@@ -36,6 +36,7 @@
 #include <stdint.h>
 #include "sds.h"
 
+/* rio的抽象 */
 struct _rio {
     /* Backend functions.
      * Since this functions do not tolerate short writes or reads the return
