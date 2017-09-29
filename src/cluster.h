@@ -34,9 +34,11 @@
 #define CLUSTER_REDIR_DOWN_STATE 5    /* -CLUSTERDOWN, global state. */
 #define CLUSTER_REDIR_DOWN_UNBOUND 6  /* -CLUSTERDOWN, unbound slot. */
 
+/* 集群节点 */
 struct clusterNode;
 
 /* clusterLink encapsulates everything needed to talk with a remote node. */
+/* 集群链 */
 typedef struct clusterLink {
     mstime_t ctime;             /* Link creation time */
     int fd;                     /* TCP socket file descriptor */
@@ -46,9 +48,9 @@ typedef struct clusterLink {
 } clusterLink;
 
 /* Cluster node flags and macros. */
-#define CLUSTER_NODE_MASTER 1     /* The node is a master */
-#define CLUSTER_NODE_SLAVE 2      /* The node is a slave */
-#define CLUSTER_NODE_PFAIL 4      /* Failure? Need acknowledge */
+#define CLUSTER_NODE_MASTER 1     /* The node is a master */        /* master节点 */
+#define CLUSTER_NODE_SLAVE 2      /* The node is a slave */         /* slave节点 */
+#define CLUSTER_NODE_PFAIL 4      /* Failure? Need acknowledge */   /* 节点失败 */
 #define CLUSTER_NODE_FAIL 8       /* The node is believed to be malfunctioning */
 #define CLUSTER_NODE_MYSELF 16    /* This node is myself */
 #define CLUSTER_NODE_HANDSHAKE 32 /* We have still to exchange the first ping */
@@ -79,22 +81,23 @@ typedef struct clusterNodeFailReport {
     mstime_t time;             /* Time of the last report from this node. */
 } clusterNodeFailReport;
 
+/* 集群节点结构 */
 typedef struct clusterNode {
-    mstime_t ctime; /* Node object creation time. */
-    char name[CLUSTER_NAMELEN]; /* Node name, hex string, sha1-size */
-    int flags;      /* CLUSTER_NODE_... */
+    mstime_t ctime; /* Node object creation time. */                    /* 节点创建的时间 */
+    char name[CLUSTER_NAMELEN]; /* Node name, hex string, sha1-size */  /* 节点名称 */
+    int flags;      /* CLUSTER_NODE_... */                              /* 节点标志 */
     uint64_t configEpoch; /* Last configEpoch observed for this node */
     unsigned char slots[CLUSTER_SLOTS/8]; /* slots handled by this node */
     int numslots;   /* Number of slots handled by this node */
-    int numslaves;  /* Number of slave nodes, if this is a master */
-    struct clusterNode **slaves; /* pointers to slave nodes */
-    struct clusterNode *slaveof; /* pointer to the master node. Note that it
+    int numslaves;  /* Number of slave nodes, if this is a master */    /* 有多少个slave节点 */
+    struct clusterNode **slaves; /* pointers to slave nodes */          /* 指向slave节点指针 */
+    struct clusterNode *slaveof; /* pointer to the master node. Note that it   
                                     may be NULL even if the node is a slave
                                     if we don't have the master node in our
                                     tables. */
-    mstime_t ping_sent;      /* Unix time we sent latest ping */
-    mstime_t pong_received;  /* Unix time we received the pong */
-    mstime_t fail_time;      /* Unix time when FAIL flag was set */
+    mstime_t ping_sent;      /* Unix time we sent latest ping */            /* ping发送的时间 */
+    mstime_t pong_received;  /* Unix time we received the pong */           /* 接收到pong的时间点 */
+    mstime_t fail_time;      /* Unix time when FAIL flag was set */         /* 失败的时间点 */
     mstime_t voted_time;     /* Last time we voted for a slave of this master */
     mstime_t repl_offset_time;  /* Unix time we received offset for this node */
     mstime_t orphaned_time;     /* Starting time of orphaned master condition */
@@ -105,6 +108,7 @@ typedef struct clusterNode {
     list *fail_reports;         /* List of nodes signaling this as failing */
 } clusterNode;
 
+/* 集群状态 */
 typedef struct clusterState {
     clusterNode *myself;  /* This node */
     uint64_t currentEpoch;
