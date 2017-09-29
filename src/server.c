@@ -161,25 +161,25 @@ struct redisCommand redisCommandTable[] = {
     {"lindex",lindexCommand,3,"r",0,NULL,1,1,1,0,0},                /* LINDDEX 返回列表下标为index的元素 */
     {"lset",lsetCommand,4,"wm",0,NULL,1,1,1,0,0},                   /* LSET 设置列表第N个元素的值 */
     {"lrange",lrangeCommand,4,"r",0,NULL,1,1,1,0,0},                /* LRANGE 按范围获取列表值 */
-    {"ltrim",ltrimCommand,4,"w",0,NULL,1,1,1,0,0},                  
-    {"lrem",lremCommand,4,"w",0,NULL,1,1,1,0,0},
-    {"rpoplpush",rpoplpushCommand,3,"wm",0,NULL,1,2,1,0,0},
-    {"sadd",saddCommand,-3,"wmF",0,NULL,1,1,1,0,0},
-    {"srem",sremCommand,-3,"wF",0,NULL,1,1,1,0,0},
-    {"smove",smoveCommand,4,"wF",0,NULL,1,2,1,0,0},
-    {"sismember",sismemberCommand,3,"rF",0,NULL,1,1,1,0,0},
-    {"scard",scardCommand,2,"rF",0,NULL,1,1,1,0,0},
-    {"spop",spopCommand,-2,"wRF",0,NULL,1,1,1,0,0},
-    {"srandmember",srandmemberCommand,-2,"rR",0,NULL,1,1,1,0,0},
-    {"sinter",sinterCommand,-2,"rS",0,NULL,1,-1,1,0,0},
-    {"sinterstore",sinterstoreCommand,-3,"wm",0,NULL,1,-1,1,0,0},
-    {"sunion",sunionCommand,-2,"rS",0,NULL,1,-1,1,0,0},
-    {"sunionstore",sunionstoreCommand,-3,"wm",0,NULL,1,-1,1,0,0},
-    {"sdiff",sdiffCommand,-2,"rS",0,NULL,1,-1,1,0,0},
-    {"sdiffstore",sdiffstoreCommand,-3,"wm",0,NULL,1,-1,1,0,0},
-    {"smembers",sinterCommand,2,"rS",0,NULL,1,1,1,0,0},
-    {"sscan",sscanCommand,-3,"rR",0,NULL,1,1,1,0,0},
-    {"zadd",zaddCommand,-4,"wmF",0,NULL,1,1,1,0,0},
+    {"ltrim",ltrimCommand,4,"w",0,NULL,1,1,1,0,0},                  /* LTRIM 对一个列表进行修剪, LTRIM key start stop, 保留start~stop之间的数据 */
+    {"lrem",lremCommand,4,"w",0,NULL,1,1,1,0,0},                    /* LREM 根据count的值，移除列表中与参数value相等的元素 */
+    {"rpoplpush",rpoplpushCommand,3,"wm",0,NULL,1,2,1,0,0},         /* RPOPLPUSH 从右弹出，从左加入 */
+    {"sadd",saddCommand,-3,"wmF",0,NULL,1,1,1,0,0},                 /* SADD 添加元素到集合 */
+    {"srem",sremCommand,-3,"wF",0,NULL,1,1,1,0,0},                  /* SREM 移除集合KEY中的一个或多个元素 */
+    {"smove",smoveCommand,4,"wF",0,NULL,1,2,1,0,0},                 /* SMOVE 把元素从一个集合移到另一个集合 */
+    {"sismember",sismemberCommand,3,"rF",0,NULL,1,1,1,0,0},         /* SISMEMBER 判断是否在集合中的元素 */
+    {"scard",scardCommand,2,"rF",0,NULL,1,1,1,0,0},                 /* SCARD 遍历集合中的元素 */
+    {"spop",spopCommand,-2,"wRF",0,NULL,1,1,1,0,0},                 /* SPOP 弹出集合中的元素 */
+    {"srandmember",srandmemberCommand,-2,"rR",0,NULL,1,1,1,0,0},    /* SRANDMEMBER 弹出任意集合中的元素 */
+    {"sinter",sinterCommand,-2,"rS",0,NULL,1,-1,1,0,0},             /* SINTER 求交集 */
+    {"sinterstore",sinterstoreCommand,-3,"wm",0,NULL,1,-1,1,0,0},   /* SINTERSTORE 求交集并存在另一个地方 */
+    {"sunion",sunionCommand,-2,"rS",0,NULL,1,-1,1,0,0},             /* SUNION 求并集 */
+    {"sunionstore",sunionstoreCommand,-3,"wm",0,NULL,1,-1,1,0,0},   /* SUNIONSTORE 求并集并存在另一个地方 */
+    {"sdiff",sdiffCommand,-2,"rS",0,NULL,1,-1,1,0,0},               /* SDIFF 求差集 */
+    {"sdiffstore",sdiffstoreCommand,-3,"wm",0,NULL,1,-1,1,0,0},     /* SDIFFSTORE 求差集并保存在另一个地方 */
+    {"smembers",sinterCommand,2,"rS",0,NULL,1,1,1,0,0},             /* SMEMBERS 返回集合中的所有成员 */
+    {"sscan",sscanCommand,-3,"rR",0,NULL,1,1,1,0,0},                /* SSCAN 扫描 */
+    {"zadd",zaddCommand,-4,"wmF",0,NULL,1,1,1,0,0},                 
     {"zincrby",zincrbyCommand,4,"wmF",0,NULL,1,1,1,0,0},
     {"zrem",zremCommand,-3,"wF",0,NULL,1,1,1,0,0},
     {"zremrangebyscore",zremrangebyscoreCommand,4,"w",0,NULL,1,1,1,0,0},
