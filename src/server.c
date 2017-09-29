@@ -3986,7 +3986,7 @@ int redisIsSupervised(int mode) {
     return 0;
 }
 
-
+/* Redis-server main 函数 */
 int main(int argc, char **argv) {
     struct timeval tv;
     int j;
@@ -4153,6 +4153,7 @@ int main(int argc, char **argv) {
     }
 
     /* Warning the user about suspicious maxmemory setting. */
+    /* 内存警告 */
     if (server.maxmemory > 0 && server.maxmemory < 1024*1024) {
         serverLog(LL_WARNING,"WARNING: You specified a maxmemory value that is less than 1MB (current value is %llu bytes). Are you sure this is what you really want?", server.maxmemory);
     }
