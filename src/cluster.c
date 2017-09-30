@@ -46,35 +46,62 @@
 /* A global reference to myself is handy to make code more clear.
  * Myself always points to server.cluster->myself, that is, the clusterNode
  * that represents this node. */
-clusterNode *myself = NULL;
+clusterNode *myself = NULL; // 指向自己的节点地址
 
+/* 创建集群节点 */
 clusterNode *createClusterNode(char *nodename, int flags);
+/* 添加节点 */
 int clusterAddNode(clusterNode *node);
+/* 节点接收连接 */
 void clusterAcceptHandler(aeEventLoop *el, int fd, void *privdata, int mask);
+/* 集群读处理 */
 void clusterReadHandler(aeEventLoop *el, int fd, void *privdata, int mask);
+/* 集群Ping处理 */
 void clusterSendPing(clusterLink *link, int type);
+/* 集群发送失败 */
 void clusterSendFail(char *nodename);
+/* 集群发送FailOver,并需要认证，故障转移 */
 void clusterSendFailoverAuthIfNeeded(clusterNode *node, clusterMsg *request);
+/* 更新集群状态 */
 void clusterUpdateState(void);
+/* 集群节点？？*/
 int clusterNodeGetSlotBit(clusterNode *n, int slot);
+/* 集群节点生成描述 */
 sds clusterGenNodesDescription(int filter);
+/* 查询集群节点 */
 clusterNode *clusterLookupNode(char *name);
+/* 集群节点增加Slave */
 int clusterNodeAddSlave(clusterNode *master, clusterNode *slave);
+/* 集群节点增加slot,什么是slot */
 int clusterAddSlot(clusterNode *n, int slot);
+/* 集群节点删除slot */
 int clusterDelSlot(int slot);
+/* 集群删除节点slots */
 int clusterDelNodeSlots(clusterNode *node);
+/* ? */
 int clusterNodeSetSlotBit(clusterNode *n, int slot);
+/* 设置集群Master */
 void clusterSetMaster(clusterNode *n);
+/* 设置Slave故障转移 */
 void clusterHandleSlaveFailover(void);
+/* 集群Slave迁移 */
 void clusterHandleSlaveMigration(int max_slaves);
 int bitmapTestBit(unsigned char *bitmap, int pos);
+/* 集群闲置之前做些什么 */
 void clusterDoBeforeSleep(int flags);
+/* 集群发送更新 */
 void clusterSendUpdate(clusterLink *link, clusterNode *node);
+/* 手动故障转移 */
 void resetManualFailover(void);
+/* 集群关闭Slots */
 void clusterCloseAllSlots(void);
+/* 集群设置节点为master */
 void clusterSetNodeAsMaster(clusterNode *n);
+/* 集群删除节点 */
 void clusterDelNode(clusterNode *delnode);
+/* */
 sds representClusterNodeFlags(sds ci, uint16_t flags);
+/* 获取集群最大时间段 */
 uint64_t clusterGetMaxEpoch(void);
 int clusterBumpConfigEpochWithoutConsensus(void);
 
