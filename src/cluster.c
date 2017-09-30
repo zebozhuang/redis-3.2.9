@@ -115,12 +115,14 @@ int clusterBumpConfigEpochWithoutConsensus(void);
  * when we lock the nodes.conf file, we create a zero-length one for the
  * sake of locking if it does not already exist), C_ERR is returned.
  * If the configuration was loaded from the file, C_OK is returned. */
+/* 加载集群配置 */
 int clusterLoadConfig(char *filename) {
     FILE *fp = fopen(filename,"r");
     struct stat sb;
     char *line;
     int maxline, j;
 
+    /* 文件打开失败 */
     if (fp == NULL) {
         if (errno == ENOENT) {
             return C_ERR;
@@ -134,6 +136,7 @@ int clusterLoadConfig(char *filename) {
 
     /* Check if the file is zero-length: if so return C_ERR to signal
      * we have to write the config. */
+    /* 文件打开失败：如果文件内容为空 */
     if (fstat(fileno(fp),&sb) != -1 && sb.st_size == 0) {
         fclose(fp);
         return C_ERR;
@@ -146,6 +149,7 @@ int clusterLoadConfig(char *filename) {
      * together with the node ID of the sender/receiver.
      *
      * To simplify we allocate 1024+CLUSTER_SLOTS*128 bytes per line. */
+    /* CLUSTER SLOTS returns details about which cluster slots map to which Redis instances */
     maxline = 1024+CLUSTER_SLOTS*128;
     line = zmalloc(maxline);
     while(fgets(line,maxline,fp) != NULL) {
@@ -199,6 +203,7 @@ int clusterLoadConfig(char *filename) {
         n->port = atoi(p+1);
 
         /* Parse flags */
+        /* 匹配参数 */
         p = s = argv[2];
         while(p) {
             p = strchr(s,',');
@@ -322,6 +327,7 @@ fmterr:
  * a single write to write the whole file. If the pre-existing file was
  * bigger we pad our payload with newlines that are anyway ignored and truncate
  * the file afterward. */
+/* 集群保存配置 */
 int clusterSaveConfig(int do_fsync) {
     sds ci;
     size_t content_size;
@@ -423,6 +429,7 @@ int clusterLockConfig(char *filename) {
     return C_OK;
 }
 
+/* 集群初始化 */
 void clusterInit(void) {
     int saveconf = 0;
 
@@ -479,13 +486,14 @@ void clusterInit(void) {
         exit(1);
     }
 
+    /* 监听服务器 */
     if (listenToPort(server.port+CLUSTER_PORT_INCR,
         server.cfd,&server.cfd_count) == C_ERR)
     {
         exit(1);
     } else {
         int j;
-
+        /* 事件的监听 */
         for (j = 0; j < server.cfd_count; j++) {
             if (aeCreateFileEvent(server.el, server.cfd[j], AE_READABLE,
                 clusterAcceptHandler, NULL) == AE_ERR)
@@ -514,6 +522,7 @@ void clusterInit(void) {
  * 6) Only for hard reset: currentEpoch and configEpoch are set to 0.
  * 7) The new configuration is saved and the cluster state updated.
  * 8) If the node was a slave, the whole data set is flushed away. */
+/* 集群重置 */
 void clusterReset(int hard) {
     dictIterator *di;
     dictEntry *de;
@@ -535,12 +544,14 @@ void clusterReset(int hard) {
 
     /* Forget all the nodes, but myself. */
     di = dictGetSafeIterator(server.cluster->nodes);
+    /* 删除所有节点 */
     while((de = dictNext(di)) != NULL) {
         clusterNode *node = dictGetVal(de);
 
         if (node == myself) continue;
         clusterDelNode(node);
     }
+    /* 释放迭代器 */
     dictReleaseIterator(di);
 
     /* Hard reset only: set epochs to 0, change node ID. */
@@ -571,7 +582,7 @@ void clusterReset(int hard) {
 /* -----------------------------------------------------------------------------
  * CLUSTER communication link
  * -------------------------------------------------------------------------- */
-
+/* 集群链 */
 clusterLink *createClusterLink(clusterNode *node) {
     clusterLink *link = zmalloc(sizeof(*link));
     link->ctime = mstime();
@@ -585,6 +596,7 @@ clusterLink *createClusterLink(clusterNode *node) {
 /* Free a cluster link, but does not free the associated node of course.
  * This function will just make sure that the original node associated
  * with this link will have the 'link' field set to NULL. */
+/* 释放集群节点 */
 void freeClusterLink(clusterLink *link) {
     if (link->fd != -1) {
         aeDeleteFileEvent(server.el, link->fd, AE_WRITABLE);
@@ -598,6 +610,7 @@ void freeClusterLink(clusterLink *link) {
     zfree(link);
 }
 
+/* 集群接受连接 */
 #define MAX_CLUSTER_ACCEPTS_PER_CALL 1000
 void clusterAcceptHandler(aeEventLoop *el, int fd, void *privdata, int mask) {
     int cport, cfd;
@@ -620,6 +633,7 @@ void clusterAcceptHandler(aeEventLoop *el, int fd, void *privdata, int mask) {
                     "Error accepting cluster node: %s", server.neterr);
             return;
         }
+        /* 设置不阻塞 */
         anetNonBlock(NULL,cfd);
         anetEnableTcpNoDelay(NULL,cfd);
 
@@ -802,6 +816,7 @@ int clusterNodeFailureReportsCount(clusterNode *node) {
     return listLength(node->fail_reports);
 }
 
+/* 集群节点移除slave */
 int clusterNodeRemoveSlave(clusterNode *master, clusterNode *slave) {
     int j;
 
@@ -820,7 +835,7 @@ int clusterNodeRemoveSlave(clusterNode *master, clusterNode *slave) {
     }
     return C_ERR;
 }
-
+/* 集群节点添加slave*/
 int clusterNodeAddSlave(clusterNode *master, clusterNode *slave) {
     int j;
 
