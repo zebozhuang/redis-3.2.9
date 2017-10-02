@@ -40,7 +40,7 @@ void slotToKeyFlush(void);
 /*-----------------------------------------------------------------------------
  * C-level DB API
  *----------------------------------------------------------------------------*/
-
+/* DB 层 API */
 /* Low level key lookup API, not actually called directly from commands
  * implementations that should instead rely on lookupKeyRead(),
  * lookupKeyWrite() and lookupKeyReadWithFlags(). */
@@ -134,17 +134,20 @@ robj *lookupKeyRead(redisDb *db, robj *key) {
  *
  * Returns the linked value object if the key exists or NULL if the key
  * does not exist in the specified DB. */
+/* 查找有写操作的key */
 robj *lookupKeyWrite(redisDb *db, robj *key) {
     expireIfNeeded(db,key);
     return lookupKey(db,key,LOOKUP_NONE);
 }
 
+/* 查找读操作的key，如果不存在，则回应 */
 robj *lookupKeyReadOrReply(client *c, robj *key, robj *reply) {
     robj *o = lookupKeyRead(c->db, key);
     if (!o) addReply(c,reply);
     return o;
 }
 
+/* 查找写操作的key，如果不存在，则回应 */
 robj *lookupKeyWriteOrReply(client *c, robj *key, robj *reply) {
     robj *o = lookupKeyWrite(c->db, key);
     if (!o) addReply(c,reply);
@@ -184,6 +187,7 @@ void dbOverwrite(redisDb *db, robj *key, robj *val) {
  * 1) The ref count of the value object is incremented.
  * 2) clients WATCHing for the destination key notified.
  * 3) The expire time of the key is reset (the key is made persistent). */
+/* 设置key/value */
 void setKey(redisDb *db, robj *key, robj *val) {
     if (lookupKeyWrite(db,key) == NULL) {
         dbAdd(db,key,val);
@@ -204,6 +208,7 @@ int dbExists(redisDb *db, robj *key) {
  * If there are no keys, NULL is returned.
  *
  * The function makes sure to return keys not already expired. */
+/* 数据库任意键 */
 robj *dbRandomKey(redisDb *db) {
     dictEntry *de;
 
@@ -227,6 +232,7 @@ robj *dbRandomKey(redisDb *db) {
 }
 
 /* Delete a key, value, and associated expiration entry if any, from the DB */
+/* 数据库删除Key */
 int dbDelete(redisDb *db, robj *key) {
     /* Deleting an entry from the expires dict will not free the sds of
      * the key, because it is shared with the main dictionary. */
@@ -265,7 +271,8 @@ int dbDelete(redisDb *db, robj *key) {
  *
  * At this point the caller is ready to modify the object, for example
  * using an sdscat() call to append some data, or anything else.
- */
+ * /
+
 robj *dbUnshareStringValue(redisDb *db, robj *key, robj *o) {
     serverAssert(o->type == OBJ_STRING);
     if (o->refcount != 1 || o->encoding != OBJ_ENCODING_RAW) {
@@ -312,6 +319,7 @@ void signalModifiedKey(redisDb *db, robj *key) {
     touchWatchedKey(db,key);
 }
 
+/* 刷新db */
 void signalFlushedDb(int dbid) {
     touchWatchedKeysOnFlush(dbid);
 }
@@ -319,7 +327,7 @@ void signalFlushedDb(int dbid) {
 /*-----------------------------------------------------------------------------
  * Type agnostic commands operating on the key space
  *----------------------------------------------------------------------------*/
-
+/* 刷新数据库? */
 void flushdbCommand(client *c) {
     server.dirty += dictSize(c->db->dict);
     signalFlushedDb(c->db->id);
@@ -347,6 +355,7 @@ void flushallCommand(client *c) {
     server.dirty++;
 }
 
+/* 删除指令 */
 void delCommand(client *c) {
     int deleted = 0, j;
 
@@ -395,7 +404,7 @@ void selectCommand(client *c) {
         addReply(c,shared.ok);
     }
 }
-
+/* 任意键值 */
 void randomkeyCommand(client *c) {
     robj *key;
 
@@ -408,6 +417,7 @@ void randomkeyCommand(client *c) {
     decrRefCount(key);
 }
 
+/* KEYS 命令 */
 void keysCommand(client *c) {
     dictIterator *di;
     dictEntry *de;
@@ -437,6 +447,7 @@ void keysCommand(client *c) {
 
 /* This callback is used by scanGenericCommand in order to collect elements
  * returned by the dictionary iterator into a list. */
+/* 扫描回调? */
 void scanCallback(void *privdata, const dictEntry *de) {
     void **pd = (void**) privdata;
     list *keys = pd[0];
