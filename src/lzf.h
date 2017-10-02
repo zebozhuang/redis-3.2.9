@@ -46,7 +46,8 @@
 **
 ***********************************************************************/
 
-#define LZF_VERSION 0x0105 /* 1.5, API version */
+/* 非常小巧的压缩算法 */
+#define LZF_VERSION 0x0105 /* 1.5, API version 版本号 */ 
 
 /*
  * Compress in_len bytes stored at the memory block starting at
