@@ -850,6 +850,7 @@ int clusterNodeAddSlave(clusterNode *master, clusterNode *slave) {
     return C_OK;
 }
 
+/* 集群：计算没有失败的节点 */
 int clusterCountNonFailingSlaves(clusterNode *n) {
     int j, okslaves = 0;
 
@@ -859,6 +860,7 @@ int clusterCountNonFailingSlaves(clusterNode *n) {
 }
 
 /* Low level cleanup of the node structure. Only called by clusterDelNode(). */
+/* 删除集群节点 */
 void freeClusterNode(clusterNode *n) {
     sds nodename;
     int j;
@@ -884,6 +886,7 @@ void freeClusterNode(clusterNode *n) {
 }
 
 /* Add a node to the nodes hash table */
+/* 添加集群节点 */
 int clusterAddNode(clusterNode *node) {
     int retval;
 
@@ -903,6 +906,7 @@ int clusterAddNode(clusterNode *node) {
  *    from the hash table and from the list of slaves of its master, if
  *    it is a slave node.
  */
+/* 删除集群节点 */
 void clusterDelNode(clusterNode *delnode) {
     int j;
     dictIterator *di;
@@ -933,6 +937,7 @@ void clusterDelNode(clusterNode *delnode) {
 }
 
 /* Node lookup by name */
+/* 查询集群节点 */
 clusterNode *clusterLookupNode(char *name) {
     sds s = sdsnewlen(name, CLUSTER_NAMELEN);
     dictEntry *de;
@@ -947,6 +952,7 @@ clusterNode *clusterLookupNode(char *name) {
  * as a result of CLUSTER MEET we don't have the node name yet, so we
  * pick a random one, and will fix it when we receive the PONG request using
  * this function. */
+/* 节点重命名 */
 void clusterRenameNode(clusterNode *node, char *newname) {
     int retval;
     sds s = sdsnewlen(node->name, CLUSTER_NAMELEN);
@@ -966,6 +972,7 @@ void clusterRenameNode(clusterNode *node, char *newname) {
 
 /* Return the greatest configEpoch found in the cluster, or the current
  * epoch if greater than any node configEpoch. */
+/* 获取最大的时间段 */
 uint64_t clusterGetMaxEpoch(void) {
     uint64_t max = 0;
     dictIterator *di;
