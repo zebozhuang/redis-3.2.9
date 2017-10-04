@@ -1176,6 +1176,7 @@ int clusterBlacklistExists(char *nodeid) {
     return retval;
 }
 
+/* 集群消息传递(PING/PONG | gossip ) */
 /* -----------------------------------------------------------------------------
  * CLUSTER messages exchange - PING/PONG and gossip
  * -------------------------------------------------------------------------- */
@@ -1201,6 +1202,7 @@ int clusterBlacklistExists(char *nodeid) {
  * 2) Or there is no majority so no slave promotion will be authorized and the
  *    FAIL flag will be cleared after some time.
  */
+/* 标志一个节点失败 */
 void markNodeAsFailingIfNeeded(clusterNode *node) {
     int failures;
     int needed_quorum = (server.cluster->size / 2) + 1;
@@ -1230,6 +1232,7 @@ void markNodeAsFailingIfNeeded(clusterNode *node) {
 /* This function is called only if a node is marked as FAIL, but we are able
  * to reach it again. It checks if there are the conditions to undo the FAIL
  * state. */
+/* 清除一个失败节点 */
 void clearNodeFailureIfNeeded(clusterNode *node) {
     mstime_t now = mstime();
 
