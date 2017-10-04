@@ -1130,6 +1130,7 @@ void clusterHandleConfigEpochCollision(clusterNode *sender) {
  * the hash table is supposed to contain very little elements at max.
  * However without the cleanup during long uptimes and with some automated
  * node add/removal procedures, entries could accumulate. */
+/* 清除黑名单 */
 void clusterBlacklistCleanup(void) {
     dictIterator *di;
     dictEntry *de;
@@ -1145,6 +1146,7 @@ void clusterBlacklistCleanup(void) {
 }
 
 /* Cleanup the blacklist and add a new node ID to the black list. */
+/* 添加加点到黑名单 */
 void clusterBlacklistAddNode(clusterNode *node) {
     dictEntry *de;
     sds id = sdsnewlen(node->name,CLUSTER_NAMELEN);
@@ -1163,6 +1165,7 @@ void clusterBlacklistAddNode(clusterNode *node) {
 /* Return non-zero if the specified node ID exists in the blacklist.
  * You don't need to pass an sds string here, any pointer to 40 bytes
  * will work. */
+/* 判断节点是否在黑名单 */
 int clusterBlacklistExists(char *nodeid) {
     sds id = sdsnewlen(nodeid,CLUSTER_NAMELEN);
     int retval;
