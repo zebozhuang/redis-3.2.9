@@ -1028,6 +1028,7 @@ ssize_t aofReadDiffFromParent(void) {
  * log Redis uses variadic commands when possible, such as RPUSH, SADD
  * and ZADD. However at max AOF_REWRITE_ITEMS_PER_CMD items per time
  * are inserted using a single command. */
+/* AOF写数据到文件 */
 int rewriteAppendOnlyFile(char *filename) {
     dictIterator *di = NULL;
     dictEntry *de;
@@ -1221,6 +1222,7 @@ void aofChildPipeReadable(aeEventLoop *el, int fd, void *privdata, int mask) {
  * and two other pipes used by the children to signal it finished with
  * the rewrite so no more data should be written, and another for the
  * parent to acknowledge it understood this new condition. */
+/* AOF 创建管道 */
 int aofCreatePipes(void) {
     int fds[6] = {-1, -1, -1, -1, -1, -1};
     int j;
@@ -1276,6 +1278,7 @@ void aofClosePipes(void) {
  *    finally will rename(2) the temp file in the actual file name.
  *    The the new file is reopened as the new append only file. Profit!
  */
+/* AOF 后台重写 */
 int rewriteAppendOnlyFileBackground(void) {
     pid_t childpid;
     long long start;
@@ -1343,7 +1346,7 @@ void bgrewriteaofCommand(client *c) {
         addReply(c,shared.err);
     }
 }
-
+/* AOF 删除暂时文件 */
 void aofRemoveTempFile(pid_t childpid) {
     char tmpfile[256];
 
@@ -1355,6 +1358,7 @@ void aofRemoveTempFile(pid_t childpid) {
  * to check the size of the file. This is useful after a rewrite or after
  * a restart, normally the size is updated just adding the write length
  * to the current length, that is much faster. */
+/* 更新AOF文件当前的大小 */
 void aofUpdateCurrentSize(void) {
     struct redis_stat sb;
     mstime_t latency;
@@ -1372,6 +1376,7 @@ void aofUpdateCurrentSize(void) {
 
 /* A background append only file rewriting (BGREWRITEAOF) terminated its work.
  * Handle this. */
+/* 后台运行AOF完 */
 void backgroundRewriteDoneHandler(int exitcode, int bysignal) {
     if (!bysignal && exitcode == 0) {
         int newfd, oldfd;
