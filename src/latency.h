@@ -38,12 +38,14 @@
 
 /* Representation of a latency sample: the sampling time and the latency
  * observed in milliseconds. */
+//* latency sample 结构 *
 struct latencySample {
     int32_t time; /* We don't use time_t to force 4 bytes usage everywhere. */
-    uint32_t latency; /* Latency in milliseconds. */
+    uint32_t latency; /* Latency in milliseconds. */ /* latency 时间，单位毫秒 */
 };
 
 /* The latency time series for a given event. */
+/* latency 时间序列 */
 struct latencyTimeSeries {
     int idx; /* Index of the next sample to store. */
     uint32_t max; /* Max latency observed for this event. */
@@ -51,6 +53,7 @@ struct latencyTimeSeries {
 };
 
 /* Latency statistics structure. */
+/* latency数据计算 */
 struct latencyStats {
     uint32_t all_time_high; /* Absolute max observed since latest reset. */
     uint32_t avg;           /* Average of current samples. */

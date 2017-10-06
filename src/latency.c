@@ -36,11 +36,13 @@
 #include "server.h"
 
 /* Dictionary type for latency events. */
+/* 比较 */
 int dictStringKeyCompare(void *privdata, const void *key1, const void *key2) {
     UNUSED(privdata);
     return strcmp(key1,key2) == 0;
 }
 
+/* 字典key哈希 */
 unsigned int dictStringHash(const void *key) {
     return dictGenHashFunction(key, strlen(key));
 }
@@ -87,6 +89,7 @@ int THPGetAnonHugePagesSize(void) {
 /* Latency monitor initialization. We just need to create the dictionary
  * of time series, each time serie is craeted on demand in order to avoid
  * having a fixed list to maintain. */
+/* latency初始化 */
 void latencyMonitorInit(void) {
     server.latency_events = dictCreate(&latencyTimeSeriesDictType,NULL);
 }
@@ -95,6 +98,7 @@ void latencyMonitorInit(void) {
  * This function is usually called via latencyAddSampleIfNeeded(), that
  * is a macro that only adds the sample if the latency is higher than
  * server.latency_monitor_threshold. */
+/* 添加latency */
 void latencyAddSample(char *event, mstime_t latency) {
     struct latencyTimeSeries *ts = dictFetchValue(server.latency_events,event);
     time_t now = time(NULL);
@@ -131,6 +135,7 @@ void latencyAddSample(char *event, mstime_t latency) {
  *
  * Note: this is O(N) even when event_to_reset is not NULL because makes
  * the code simpler and we have a small fixed max number of events. */
+/* latency重置 */
 int latencyResetEvent(char *event_to_reset) {
     dictIterator *di;
     dictEntry *de;
@@ -156,6 +161,7 @@ int latencyResetEvent(char *event_to_reset) {
  * Check latency.h definition of struct latenctStat for more info.
  * If the specified event has no elements the structure is populate with
  * zero values. */
+/* 分析Latency */
 void analyzeLatencyForEvent(char *event, struct latencyStats *ls) {
     struct latencyTimeSeries *ts = dictFetchValue(server.latency_events,event);
     int j;
@@ -213,6 +219,7 @@ void analyzeLatencyForEvent(char *event, struct latencyStats *ls) {
 }
 
 /* Create a human readable report of latency events for this Redis instance. */
+/* 创建Latency报告 */
 sds createLatencyReport(void) {
     sds report = sdsempty();
     int advise_better_vm = 0;       /* Better virtual machines. */
