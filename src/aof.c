@@ -57,16 +57,21 @@ void aofClosePipes(void);
  * AOF_RW_BUF_BLOCK_SIZE bytes.
  * ------------------------------------------------------------------------- */
 
+/*
+    AOF重写buffer实现
+*/
 #define AOF_RW_BUF_BLOCK_SIZE (1024*1024*10)    /* 10 MB per block */
 
+/* AOFblock结构 */
 typedef struct aofrwblock {
     unsigned long used, free;
-    char buf[AOF_RW_BUF_BLOCK_SIZE];
+    char buf[AOF_RW_BUF_BLOCK_SIZE]; /* 10M */
 } aofrwblock;
 
 /* This function free the old AOF rewrite buffer if needed, and initialize
  * a fresh new one. It tests for server.aof_rewrite_buf_blocks equal to NULL
  * so can be used for the first initialization as well. */
+/* 重置Buffer: block其实是一个列表 */
 void aofRewriteBufferReset(void) {
     if (server.aof_rewrite_buf_blocks)
         listRelease(server.aof_rewrite_buf_blocks);
@@ -76,6 +81,7 @@ void aofRewriteBufferReset(void) {
 }
 
 /* Return the current size of the AOF rewrite buffer. */
+/* Buffer的大小*/
 unsigned long aofRewriteBufferSize(void) {
     listNode *ln;
     listIter li;
@@ -92,6 +98,7 @@ unsigned long aofRewriteBufferSize(void) {
 /* Event handler used to send data to the child process doing the AOF
  * rewrite. We send pieces of our AOF differences buffer so that the final
  * write when the child finishes the rewrite will be small. */
+/* 写数据 */
 void aofChildWriteDiffData(aeEventLoop *el, int fd, void *privdata, int mask) {
     listNode *ln;
     aofrwblock *block;
@@ -122,6 +129,7 @@ void aofChildWriteDiffData(aeEventLoop *el, int fd, void *privdata, int mask) {
 }
 
 /* Append data to the AOF rewrite buffer, allocating new blocks if needed. */
+/* 添加数据到buffer */
 void aofRewriteBufferAppend(unsigned char *s, unsigned long len) {
     listNode *ln = listLast(server.aof_rewrite_buf_blocks);
     aofrwblock *block = ln ? ln->value : NULL;
@@ -171,6 +179,8 @@ void aofRewriteBufferAppend(unsigned char *s, unsigned long len) {
 /* Write the buffer (possibly composed of multiple blocks) into the specified
  * fd. If a short write or any other error happens -1 is returned,
  * otherwise the number of bytes written is returned. */
+
+/* 把buffer写到文件 */
 ssize_t aofRewriteBufferWrite(int fd) {
     listNode *ln;
     listIter li;
@@ -205,8 +215,10 @@ void aof_background_fsync(int fd) {
 
 /* Called when the user switches from "appendonly yes" to "appendonly no"
  * at runtime using the CONFIG command. */
+/* 停止AOF */
 void stopAppendOnly(void) {
     serverAssert(server.aof_state != AOF_OFF);
+    /* 停止前先保存数据 */
     flushAppendOnlyFile(1);
     aof_fsync(server.aof_fd);
     close(server.aof_fd);
@@ -235,10 +247,12 @@ void stopAppendOnly(void) {
 
 /* Called when the user switches from "appendonly no" to "appendonly yes"
  * at runtime using the CONFIG command. */
+/* 开始AOF */
 int startAppendOnly(void) {
     char cwd[MAXPATHLEN]; /* Current working dir path for error messages. */
 
     server.aof_last_fsync = server.unixtime;
+    /* 打开AOF fd */
     server.aof_fd = open(server.aof_filename,O_WRONLY|O_APPEND|O_CREAT,0644);
     serverAssert(server.aof_state == AOF_OFF);
     if (server.aof_fd == -1) {
@@ -284,6 +298,7 @@ int startAppendOnly(void) {
  *
  * However if force is set to 1 we'll write regardless of the background
  * fsync. */
+/* 刷新AOF 文件 */
 #define AOF_WRITE_LOG_ERROR_RATE 30 /* Seconds between errors logging. */
 void flushAppendOnlyFile(int force) {
     ssize_t nwritten;
