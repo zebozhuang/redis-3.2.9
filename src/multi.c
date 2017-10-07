@@ -32,12 +32,14 @@
 /* ================================ MULTI/EXEC ============================== */
 
 /* Client state initialization for MULTI/EXEC */
+/* 事物初始化 */
 void initClientMultiState(client *c) {
     c->mstate.commands = NULL;
     c->mstate.count = 0;
 }
 
 /* Release all the resources associated with MULTI/EXEC state */
+/* 释放Multi命令 */
 void freeClientMultiState(client *c) {
     int j;
 
@@ -53,6 +55,7 @@ void freeClientMultiState(client *c) {
 }
 
 /* Add a new command into the MULTI commands queue */
+/* 命令队列  */
 void queueMultiCommand(client *c) {
     multiCmd *mc;
     int j;
@@ -69,6 +72,7 @@ void queueMultiCommand(client *c) {
     c->mstate.count++;
 }
 
+/* 释放事物命令 */
 void discardTransaction(client *c) {
     freeClientMultiState(c);
     initClientMultiState(c);
@@ -78,6 +82,7 @@ void discardTransaction(client *c) {
 
 /* Flag the transacation as DIRTY_EXEC so that EXEC will fail.
  * Should be called every time there is an error while queueing a command. */
+/* 标记事物 */
 void flagTransaction(client *c) {
     if (c->flags & CLIENT_MULTI)
         c->flags |= CLIENT_DIRTY_EXEC;
