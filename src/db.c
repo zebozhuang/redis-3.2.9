@@ -1008,22 +1008,27 @@ void expireGenericCommand(client *c, long long basetime, int unit) {
     }
 }
 
+/* 过期命令 */
 void expireCommand(client *c) {
     expireGenericCommand(c,mstime(),UNIT_SECONDS);
 }
 
+/* 过期命令 */
 void expireatCommand(client *c) {
     expireGenericCommand(c,0,UNIT_SECONDS);
 }
 
+/* 过期命令， 单位毫秒 */
 void pexpireCommand(client *c) {
     expireGenericCommand(c,mstime(),UNIT_MILLISECONDS);
 }
 
+/* 过期命令，单位毫秒 */
 void pexpireatCommand(client *c) {
     expireGenericCommand(c,0,UNIT_MILLISECONDS);
 }
 
+/* 获取一个key的ttl */
 void ttlGenericCommand(client *c, int output_ms) {
     long long expire, ttl = -1;
 
@@ -1046,14 +1051,17 @@ void ttlGenericCommand(client *c, int output_ms) {
     }
 }
 
+/* 获取key的ttl */
 void ttlCommand(client *c) {
     ttlGenericCommand(c, 0);
 }
 
+/* 获取key的ttl，单位毫秒 */
 void pttlCommand(client *c) {
     ttlGenericCommand(c, 1);
 }
 
+/* 使key不过期, 永久有效 */
 void persistCommand(client *c) {
     dictEntry *de;
 
@@ -1071,6 +1079,7 @@ void persistCommand(client *c) {
 }
 
 /* TOUCH key1 [key2 key3 ... keyN] */
+/* 检查key1, key2, ... 有多少已经是建立了 */
 void touchCommand(client *c) {
     int touched = 0;
     for (int j = 1; j < c->argc; j++)
