@@ -96,7 +96,7 @@ void multiCommand(client *c) {
     c->flags |= CLIENT_MULTI;
     addReply(c,shared.ok);
 }
-
+/* 结束事物 */
 void discardCommand(client *c) {
     if (!(c->flags & CLIENT_MULTI)) {
         addReplyError(c,"DISCARD without MULTI");
@@ -115,7 +115,7 @@ void execCommandPropagateMulti(client *c) {
               PROPAGATE_AOF|PROPAGATE_REPL);
     decrRefCount(multistring);
 }
-
+/* 执行事物 */
 void execCommand(client *c) {
     int j;
     robj **orig_argv;
@@ -198,12 +198,14 @@ handle_monitor:
 /* In the client->watched_keys list we need to use watchedKey structures
  * as in order to identify a key in Redis we need both the key name and the
  * DB */
+/* 建立Watch_keys是为了监控dirty keys*/
 typedef struct watchedKey {
     robj *key;
     redisDb *db;
 } watchedKey;
 
 /* Watch for the specified key */
+/* 添加Key */
 void watchForKey(client *c, robj *key) {
     list *clients = NULL;
     listIter li;
@@ -235,6 +237,7 @@ void watchForKey(client *c, robj *key) {
 
 /* Unwatch all the keys watched by this client. To clean the EXEC dirty
  * flag is up to the caller. */
+/* 删除Key */
 void unwatchAllKeys(client *c) {
     listIter li;
     listNode *ln;
