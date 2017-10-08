@@ -101,7 +101,7 @@ typedef struct aeEventLoop {
     long long timeEventNextId;                                      /* 下个时间事件Id */
     time_t lastTime;     /* Used to detect system clock skew */     /* 用来测试时间偏移(https://en.wikipedia.org/wiki/Clock_skew)*/
     aeFileEvent *events; /* Registered events */        /* 注册的文件事件 */
-    aeFiredEvent *fired; /* Fired events */             /* 已经没有用到的事件 */
+    aeFiredEvent *fired; /* Fired events */             /* 点燃的事件，就是活跃的事件 */
     aeTimeEvent *timeEventHead;                         /* 时间事件 */
     int stop;
     void *apidata; /* This is used for polling API specific data */ /* 给Polling API数据 */
