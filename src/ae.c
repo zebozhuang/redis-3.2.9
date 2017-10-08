@@ -129,6 +129,7 @@ void aeDeleteEventLoop(aeEventLoop *eventLoop) {
     zfree(eventLoop);
 }
 
+/* 停止事件循环 */
 void aeStop(aeEventLoop *eventLoop) {
     eventLoop->stop = 1;
 }
@@ -136,6 +137,16 @@ void aeStop(aeEventLoop *eventLoop) {
 int aeCreateFileEvent(aeEventLoop *eventLoop, int fd, int mask,
         aeFileProc *proc, void *clientData)
 {
+    /*
+        aeCreateFileEvent函数是为了执行epoll_ctl系统调用，
+        epoll_ctl对anetTcpServer和eaeCreateEventLoop创建的poll文件描述符EPOLLIN事件监听
+    */
+    /*
+        eventLoop: 有aeCreateEventLoop创建的事件循环.
+        fd: 监听文件描述符
+        mask: 可读server.fd监听EPOLLIN事件
+        proc: acceptHandler，当事件被监听，这个事件就会被调用，这个函数存在eventLoop->events[server.fd]->rfileProc
+    */
     if (fd >= eventLoop->setsize) {
         errno = ERANGE;
         return AE_ERR;
