@@ -284,11 +284,12 @@ static aeTimeEvent *aeSearchNearestTimer(aeEventLoop *eventLoop)
 }
 
 /* Process time events */
+/* 处理时间事件, 返回处理的事件个数，不包括已经删除的事件 */
 static int processTimeEvents(aeEventLoop *eventLoop) {
     int processed = 0;
     aeTimeEvent *te, *prev;
     long long maxId;
-    time_t now = time(NULL);
+    time_t now = time(NULL);    /* 当前时间 */
 
     /* If the system clock is moved to the future, and then set back to the
      * right value, time events may be delayed in a random way. Often this
@@ -298,10 +299,11 @@ static int processTimeEvents(aeEventLoop *eventLoop) {
      * events to be processed ASAP when this happens: the idea is that
      * processing events earlier is less dangerous than delaying them
      * indefinitely, and practice suggests it is. */
+    /* ASAP --> as soon as possible */
     if (now < eventLoop->lastTime) {
         te = eventLoop->timeEventHead;
         while(te) {
-            te->when_sec = 0;
+            te->when_sec = 0;   /* when_sec等于0，下面的时间事件都会处理 */
             te = te->next;
         }
     }
@@ -315,7 +317,7 @@ static int processTimeEvents(aeEventLoop *eventLoop) {
         long long id;
 
         /* Remove events scheduled for deletion. */
-        if (te->id == AE_DELETED_EVENT_ID) {
+        if (te->id == AE_DELETED_EVENT_ID) {    /* 如果事件被删除了，要执行finalizerProc */
             aeTimeEvent *next = te->next;
             if (prev == NULL)
                 eventLoop->timeEventHead = te->next;
@@ -324,7 +326,7 @@ static int processTimeEvents(aeEventLoop *eventLoop) {
             if (te->finalizerProc)
                 te->finalizerProc(eventLoop, te->clientData);
             zfree(te);
-            te = next;
+            te = next;  /* 释放后，并指向下个事件 */
             continue;
         }
 
@@ -434,8 +436,8 @@ int aeProcessEvents(aeEventLoop *eventLoop, int flags)
         numevents = aeApiPoll(eventLoop, tvp);
         for (j = 0; j < numevents; j++) {
             aeFileEvent *fe = &eventLoop->events[eventLoop->fired[j].fd];
-            int mask = eventLoop->fired[j].mask;
-            int fd = eventLoop->fired[j].fd;
+            int mask = eventLoop->fired[j].mask;        /* 可读或可写 */
+            int fd = eventLoop->fired[j].fd;            /* 该事件的文件描述符 */
             int rfired = 0;
 
 	    /* note the fe->mask & mask & ... code: maybe an already processed
