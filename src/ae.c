@@ -43,7 +43,7 @@
 #include "ae.h"
 #include "zmalloc.h"
 #include "config.h"
-
+/* 关于Redis Event： https://redis.io/topics/internals-rediseventlib */
 /* Include the best multiplexing layer supported by this system.
  * The following should be ordered by performances, descending. */
 #ifdef HAVE_EVPORT
@@ -60,26 +60,27 @@
     #endif
 #endif
 
+/* 创建事件循环,参数：集合大小 */
 aeEventLoop *aeCreateEventLoop(int setsize) {
     aeEventLoop *eventLoop;
     int i;
 
     if ((eventLoop = zmalloc(sizeof(*eventLoop))) == NULL) goto err;
-    eventLoop->events = zmalloc(sizeof(aeFileEvent)*setsize);
-    eventLoop->fired = zmalloc(sizeof(aeFiredEvent)*setsize);
+    eventLoop->events = zmalloc(sizeof(aeFileEvent)*setsize);   /* 事件 */
+    eventLoop->fired = zmalloc(sizeof(aeFiredEvent)*setsize);   /* */
     if (eventLoop->events == NULL || eventLoop->fired == NULL) goto err;
-    eventLoop->setsize = setsize;
-    eventLoop->lastTime = time(NULL);
-    eventLoop->timeEventHead = NULL;
-    eventLoop->timeEventNextId = 0;
-    eventLoop->stop = 0;
-    eventLoop->maxfd = -1;
-    eventLoop->beforesleep = NULL;
+    eventLoop->setsize = setsize;       /* 集合大小 */
+    eventLoop->lastTime = time(NULL);   /* 记录时间 */
+    eventLoop->timeEventHead = NULL;    /* 时间事件 */
+    eventLoop->timeEventNextId = 0;     /* 时间事件下个Id */
+    eventLoop->stop = 0;                /* 是否停止 */
+    eventLoop->maxfd = -1;              /* 最大文件id */
+    eventLoop->beforesleep = NULL;      /* 闲置事件作什么事件 */
     if (aeApiCreate(eventLoop) == -1) goto err;
     /* Events with mask == AE_NONE are not set. So let's initialize the
      * vector with it. */
     for (i = 0; i < setsize; i++)
-        eventLoop->events[i].mask = AE_NONE;
+        eventLoop->events[i].mask = AE_NONE;        /* 还没有事件 */
     return eventLoop;
 
 err:
@@ -187,6 +188,7 @@ static void aeGetTime(long *seconds, long *milliseconds)
 }
 
 static void aeAddMillisecondsToNow(long long milliseconds, long *sec, long *ms) {
+    /* 转 milliseconds（时间段，所以需要使用cur_ms, cur_sec）为当前时间 */
     long cur_sec, cur_ms, when_sec, when_ms;
 
     aeGetTime(&cur_sec, &cur_ms);
@@ -204,6 +206,16 @@ long long aeCreateTimeEvent(aeEventLoop *eventLoop, long long milliseconds,
         aeTimeProc *proc, void *clientData,
         aeEventFinalizerProc *finalizerProc)
 {
+    /*
+        eventLoop: 事件循环对象
+        milliseconds: 过期时间段
+        proc: 函数指针，保存着函数的指针，当事件过期过期后，执行该函数
+        clientData: 多大时候为空
+        finalizerProc：函数指针，在时间事件从timed events被删除之前调用
+
+        initServer 调用 aeCreateTimeEvent 添加 时间事件 到 eventLoop的timeEventHead的字段里面
+        timeEventHead是个指向timed events的事件列表
+    */
     long long id = eventLoop->timeEventNextId++;
     aeTimeEvent *te;
 
