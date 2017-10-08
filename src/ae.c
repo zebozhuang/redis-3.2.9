@@ -266,6 +266,7 @@ int aeDeleteTimeEvent(aeEventLoop *eventLoop, long long id)
  *    Much better but still insertion or deletion of timers is O(N).
  * 2) Use a skiplist to have this operation as O(1) and insertion as O(log(N)).
  */
+/* 从eventLoop里面查找出来最近的时间时间，并返回该事件 */
 static aeTimeEvent *aeSearchNearestTimer(aeEventLoop *eventLoop)
 {
     aeTimeEvent *te = eventLoop->timeEventHead;
@@ -361,7 +362,7 @@ static int processTimeEvents(aeEventLoop *eventLoop) {
  * Without special flags the function sleeps until some file event
  * fires, or when the next time event occurs (if any).
  *
- * If flags is 0, the function does nothing and returns.
+ * If flags is 0, the function does nothing and returns. 
  * if flags has AE_ALL_EVENTS set, all the kind of events are processed.
  * if flags has AE_FILE_EVENTS set, file events are processed.
  * if flags has AE_TIME_EVENTS set, time events are processed.
@@ -369,6 +370,13 @@ static int processTimeEvents(aeEventLoop *eventLoop) {
  * the events that's possible to process without to wait are processed.
  *
  * The function returns the number of events processed. */
+/*
+    flags标志是0，proc函数不做任务事情
+    flags标志是AE_ALL_EVENTS集合，所有的事件都处理
+    flags标志是AE_FILE_EVENTS集合，所有的文件事件都处理
+    flags标志是AE_TIME_EVENTS集合，所有的时间事件都处理
+    flags标志是AE_DONT_WAIT集合，函数返回ASAP
+*/
 int aeProcessEvents(aeEventLoop *eventLoop, int flags)
 {
     int processed = 0, numevents;
