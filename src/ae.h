@@ -76,15 +76,15 @@ typedef struct aeFileEvent {
 } aeFileEvent;
 
 /* Time event structure */
-/* 时间时间驱动对象 */
+/* 时间事件对象，作为一个链表，没有按时间排序 */
 typedef struct aeTimeEvent {
     long long id; /* time event identifier. */  /* 事件id */
     long when_sec; /* seconds */                /* 时间（秒） */
     long when_ms; /* milliseconds */            /* 时间（毫秒）*/
-    aeTimeProc *timeProc;
-    aeEventFinalizerProc *finalizerProc;
+    aeTimeProc *timeProc;                       /* 当时间过期后，调用该函数 */
+    aeEventFinalizerProc *finalizerProc;        /* 当事件最后要删除时，调用该函数 */
     void *clientData;
-    struct aeTimeEvent *next;
+    struct aeTimeEvent *next;                   /* 下个时间事件 */
 } aeTimeEvent;
 
 /* A fired event */
@@ -101,7 +101,7 @@ typedef struct aeEventLoop {
     long long timeEventNextId;                                      /* 下个时间事件Id */
     time_t lastTime;     /* Used to detect system clock skew */     /* 用来测试时间偏移(https://en.wikipedia.org/wiki/Clock_skew)*/
     aeFileEvent *events; /* Registered events */        /* 注册的文件事件 */
-    aeFiredEvent *fired; /* Fired events */             /* 点燃的事件，就是活跃的事件 */
+    aeFiredEvent *fired; /* Fired events */             /* 点燃的事件，就是活跃的事件, 对events里面的事件进行收集 */
     aeTimeEvent *timeEventHead;                         /* 时间事件 */
     int stop;
     void *apidata; /* This is used for polling API specific data */ /* 给Polling API数据 */
