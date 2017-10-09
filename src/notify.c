@@ -30,13 +30,30 @@
 #include "server.h"
 
 /* This file implements keyspace events notification via Pub/Sub ad
- * described at http://redis.io/topics/keyspace-events. */
+ * described at http://redis.io/topics/keyspace-events. 
+ * https://redis.io/topics/notifications
+ */
 
 /* Turn a string representing notification classes into an integer
  * representing notification classes flags xored.
  *
  * The function returns -1 if the input contains characters not mapping to
  * any class. */
+
+/*
+    K     Keyspace events, published with __keyspace@<db>__ prefix.
+    E     Keyevent events, published with __keyevent@<db>__ prefix.
+    g     Generic commands (non-type specific) like DEL, EXPIRE, RENAME, ...
+    $     String commands
+    l     List commands
+    s     Set commands
+    h     Hash commands
+    z     Sorted set commands
+    x     Expired events (events generated every time a key expires)
+    e     Evicted events (events generated when a key is evicted for maxmemory)
+    A     Alias for g$lshzxe, so that the "AKE" string means all the events.
+*/
+/* keyspaceEvent转为flag标志 */
 int keyspaceEventsStringToFlags(char *classes) {
     char *p = classes;
     int c, flags = 0;
@@ -64,6 +81,7 @@ int keyspaceEventsStringToFlags(char *classes) {
  * as input an integer with the xored flags and returns a string representing
  * the selected classes. The string returned is an sds string that needs to
  * be released with sdsfree(). */
+/* 标志转化为keyspaceEvent*/
 sds keyspaceEventsFlagsToString(int flags) {
     sds res;
 

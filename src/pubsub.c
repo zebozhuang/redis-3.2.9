@@ -222,6 +222,7 @@ int pubsubUnsubscribeAllPatterns(client *c, int notify) {
 }
 
 /* Publish a message */
+/* 发布一个消息 */
 int pubsubPublishMessage(robj *channel, robj *message) {
     int receivers = 0;
     dictEntry *de;
