@@ -29,10 +29,16 @@
 
 #include "server.h"
 
+/*
+    https://redis.io/topics/pubsub 
+*/
+
 /*-----------------------------------------------------------------------------
  * Pubsub low level API
  *----------------------------------------------------------------------------*/
-
+/*
+    释放PubsubPattern
+*/
 void freePubsubPattern(void *p) {
     pubsubPattern *pat = p;
 
@@ -40,6 +46,9 @@ void freePubsubPattern(void *p) {
     zfree(pat);
 }
 
+/*
+    匹配PubsubPattern
+*/
 int listMatchPubsubPattern(void *a, void *b) {
     pubsubPattern *pa = a, *pb = b;
 
@@ -55,6 +64,7 @@ int clientSubscriptionsCount(client *c) {
 
 /* Subscribe a client to a channel. Returns 1 if the operation succeeded, or
  * 0 if the client was already subscribed to that channel. */
+/* 对pubsub订阅 */
 int pubsubSubscribeChannel(client *c, robj *channel) {
     dictEntry *de;
     list *clients = NULL;
@@ -85,6 +95,7 @@ int pubsubSubscribeChannel(client *c, robj *channel) {
 
 /* Unsubscribe a client from a channel. Returns 1 if the operation succeeded, or
  * 0 if the client was not subscribed to the specified channel. */
+/* 退订一个频道 */
 int pubsubUnsubscribeChannel(client *c, robj *channel, int notify) {
     dictEntry *de;
     list *clients;
@@ -124,6 +135,7 @@ int pubsubUnsubscribeChannel(client *c, robj *channel, int notify) {
 }
 
 /* Subscribe a client to a pattern. Returns 1 if the operation succeeded, or 0 if the client was already subscribed to that pattern. */
+/* 订阅一个客户端到一个pattern */
 int pubsubSubscribePattern(client *c, robj *pattern) {
     int retval = 0;
 
@@ -244,7 +256,8 @@ int pubsubPublishMessage(robj *channel, robj *message) {
             addReply(c,shared.messagebulk);
             addReplyBulk(c,channel);
             addReplyBulk(c,message);
-            receivers++;
+            
+            ++;
         }
     }
     /* Send to clients listening to matching channels */
