@@ -93,6 +93,7 @@ err:
 }
 
 /* Return the current set size. */
+/* 返回当前事件集合的大小 */
 int aeGetSetSize(aeEventLoop *eventLoop) {
     return eventLoop->setsize;
 }
@@ -104,6 +105,7 @@ int aeGetSetSize(aeEventLoop *eventLoop) {
  * performed at all.
  *
  * Otherwise AE_OK is returned and the operation is successful. */
+/* 对EventLoop的事件集合大小重置 */
 int aeResizeSetSize(aeEventLoop *eventLoop, int setsize) {
     int i;
 
@@ -122,6 +124,7 @@ int aeResizeSetSize(aeEventLoop *eventLoop, int setsize) {
     return AE_OK;
 }
 
+/*释放eventLoop */
 void aeDeleteEventLoop(aeEventLoop *eventLoop) {
     aeApiFree(eventLoop);
     zfree(eventLoop->events);
@@ -164,6 +167,7 @@ int aeCreateFileEvent(aeEventLoop *eventLoop, int fd, int mask,
     return AE_OK;
 }
 
+/* 删除文件事件 */
 void aeDeleteFileEvent(aeEventLoop *eventLoop, int fd, int mask)
 {
     if (fd >= eventLoop->setsize) return;
@@ -181,7 +185,7 @@ void aeDeleteFileEvent(aeEventLoop *eventLoop, int fd, int mask)
         eventLoop->maxfd = j;
     }
 }
-
+/* 根据文件描述符获取事件 */
 int aeGetFileEvents(aeEventLoop *eventLoop, int fd) {
     if (fd >= eventLoop->setsize) return 0;
     aeFileEvent *fe = &eventLoop->events[fd];
@@ -213,7 +217,7 @@ static void aeAddMillisecondsToNow(long long milliseconds, long *sec, long *ms) 
     *sec = when_sec;
     *ms = when_ms;
 }
-
+/* 创建时间事件 */
 long long aeCreateTimeEvent(aeEventLoop *eventLoop, long long milliseconds,
         aeTimeProc *proc, void *clientData,
         aeEventFinalizerProc *finalizerProc)
@@ -243,6 +247,7 @@ long long aeCreateTimeEvent(aeEventLoop *eventLoop, long long milliseconds,
     return id;
 }
 
+/* 删除时间事件 */
 int aeDeleteTimeEvent(aeEventLoop *eventLoop, long long id)
 {
     aeTimeEvent *te = eventLoop->timeEventHead;
@@ -483,6 +488,7 @@ int aeWait(int fd, int mask, long long milliseconds) {
     }
 }
 
+/* 事件主要线程 */
 void aeMain(aeEventLoop *eventLoop) {
     eventLoop->stop = 0;
     while (!eventLoop->stop) {
@@ -492,10 +498,12 @@ void aeMain(aeEventLoop *eventLoop) {
     }
 }
 
+/* 获取API使用的名称：select/epoll/kqueue */
 char *aeGetApiName(void) {
     return aeApiName();
 }
 
+/* 在闲置时间之前调用 */
 void aeSetBeforeSleepProc(aeEventLoop *eventLoop, aeBeforeSleepProc *beforesleep) {
     eventLoop->beforesleep = beforesleep;
 }
