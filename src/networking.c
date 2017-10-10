@@ -43,6 +43,7 @@ size_t sdsZmallocSize(sds s) {
 
 /* Return the amount of memory used by the sds string at object->ptr
  * for a string object. */
+/* 返回一个sds对象所需要的内存 */
 size_t getStringObjectSdsUsedMemory(robj *o) {
     serverAssertWithInfo(NULL,o,o->type == OBJ_STRING);
     switch(o->encoding) {
@@ -209,17 +210,20 @@ robj *dupLastObjectIfNeeded(list *reply) {
 /* -----------------------------------------------------------------------------
  * Low level functions to add more data to output buffers.
  * -------------------------------------------------------------------------- */
-
+/* 添加回复内容到client的buff里面 */
 int _addReplyToBuffer(client *c, const char *s, size_t len) {
     size_t available = sizeof(c->buf)-c->bufpos;
 
+    /* 客户端已经关闭, 不需要再回复 */
     if (c->flags & CLIENT_CLOSE_AFTER_REPLY) return C_OK;
 
     /* If there already are entries in the reply list, we cannot
      * add anything more to the static buffer. */
+    /* 如果客户端的回复buffer已经内容了，那么就不能再添加回复了 */
     if (listLength(c->reply) > 0) return C_ERR;
 
     /* Check that the buffer has enough space available for this string. */
+    /* 如果buffer没有足够的空间，返回 */
     if (len > available) return C_ERR;
 
     memcpy(c->buf+c->bufpos,s,len);
@@ -230,8 +234,10 @@ int _addReplyToBuffer(client *c, const char *s, size_t len) {
 void _addReplyObjectToList(client *c, robj *o) {
     robj *tail;
 
+    /* 如果客户端已经关闭，那么可以返回 */
     if (c->flags & CLIENT_CLOSE_AFTER_REPLY) return;
 
+    /* 当前reply为空，可以直接添加到reply列表, reply_bytes的长度增加 */
     if (listLength(c->reply) == 0) {
         incrRefCount(o);
         listAddNodeTail(c->reply,o);
@@ -326,6 +332,7 @@ void _addReplyStringToList(client *c, const char *s, size_t len) {
  * The following functions are the ones that commands implementations will call.
  * -------------------------------------------------------------------------- */
 
+/* 回复客户端 */
 void addReply(client *c, robj *obj) {
     if (prepareClientToWrite(c) != C_OK) return;
 

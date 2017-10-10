@@ -211,6 +211,7 @@ int pubsubUnsubscribeAllChannels(client *c, int notify) {
 
 /* Unsubscribe from all the patterns. Return the number of patterns the
  * client was subscribed from. */
+/* tui*/
 int pubsubUnsubscribeAllPatterns(client *c, int notify) {
     listNode *ln;
     listIter li;
@@ -242,7 +243,8 @@ int pubsubPublishMessage(robj *channel, robj *message) {
     listIter li;
 
     /* Send to clients listening for that channel */
-    de = dictFind(server.pubsub_channels,channel);
+    /* 查找出当前的频道 */
+    de = dictFind(server.pubsub_channels, channel);
     if (de) {
         list *list = dictGetVal(de);
         listNode *ln;
@@ -256,8 +258,7 @@ int pubsubPublishMessage(robj *channel, robj *message) {
             addReply(c,shared.messagebulk);
             addReplyBulk(c,channel);
             addReplyBulk(c,message);
-            
-            ++;
+            receivers++;
         }
     }
     /* Send to clients listening to matching channels */
