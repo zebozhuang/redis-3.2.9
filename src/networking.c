@@ -240,6 +240,7 @@ void _addReplyObjectToList(client *c, robj *o) {
     /* 当前reply为空，可以直接添加到reply列表, reply_bytes的长度增加 */
     if (listLength(c->reply) == 0) {
         incrRefCount(o);
+
         listAddNodeTail(c->reply,o);
         c->reply_bytes += getStringObjectSdsUsedMemory(o);
     } else {
@@ -265,14 +266,16 @@ void _addReplyObjectToList(client *c, robj *o) {
 
 /* This method takes responsibility over the sds. When it is no longer
  * needed it will be free'd, otherwise it ends up in a robj. */
+/* 将字符串添加到client reply列表中 */
 void _addReplySdsToList(client *c, sds s) {
     robj *tail;
-
+    /* 如果客户端关闭 */
     if (c->flags & CLIENT_CLOSE_AFTER_REPLY) {
         sdsfree(s);
         return;
     }
 
+    /* 如果replay的长度为0，则添加 */
     if (listLength(c->reply) == 0) {
         listAddNodeTail(c->reply,createObject(OBJ_STRING,s));
         c->reply_bytes += sdsZmallocSize(s);
@@ -296,6 +299,7 @@ void _addReplySdsToList(client *c, sds s) {
     asyncCloseClientOnOutputBufferLimitReached(c);
 }
 
+/* 添加原始字符串到client reply中 */
 void _addReplyStringToList(client *c, const char *s, size_t len) {
     robj *tail;
 
