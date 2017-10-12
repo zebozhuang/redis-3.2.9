@@ -30,6 +30,7 @@
 #include "server.h"
 #include <sys/uio.h>
 #include <math.h>
+/* redis reply 怎么回复客户端的? */
 
 static void setProtocolError(client *c, int pos);
 
