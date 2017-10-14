@@ -579,6 +579,7 @@ void feedAppendOnlyFile(struct redisCommand *cmd, int dictid, robj **argv, int a
 /* ----------------------------------------------------------------------------
  * AOF loading
  * ------------------------------------------------------------------------- */
+/* AOF 加载 */
 
 /* In Redis commands are always executed in the context of a client, so in
  * order to load the append only file we need to create a fake client. */
@@ -609,6 +610,7 @@ struct client *createFakeClient(void) {
     return c;
 }
 
+/* 释放假的客户端的数组 */
 void freeFakeClientArgv(struct client *c) {
     int j;
 
@@ -617,6 +619,7 @@ void freeFakeClientArgv(struct client *c) {
     zfree(c->argv);
 }
 
+/* 释放假的客户端 */
 void freeFakeClient(struct client *c) {
     sdsfree(c->querybuf);
     listRelease(c->reply);
@@ -628,6 +631,7 @@ void freeFakeClient(struct client *c) {
 /* Replay the append log file. On success C_OK is returned. On non fatal
  * error (the append only file is zero-length) C_ERR is returned. On
  * fatal error an error message is logged and the program exists. */
+/* 加载aof文件 */
 int loadAppendOnlyFile(char *filename) {
     struct client *fakeClient;
     FILE *fp = fopen(filename,"r");
