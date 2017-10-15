@@ -955,7 +955,7 @@ int expireIfNeeded(redisDb *db, robj *key) {
 /*-----------------------------------------------------------------------------
  * Expires Commands
  *----------------------------------------------------------------------------*/
-
+/* 过期命令 */
 /* This is the generic command implementation for EXPIRE, PEXPIRE, EXPIREAT
  * and PEXPIREAT. Because the commad second argument may be relative or absolute
  * the "basetime" argument is used to signal what the base time is (either 0
@@ -1133,6 +1133,7 @@ int *getKeysFromCommand(struct redisCommand *cmd, robj **argv, int argc, int *nu
 }
 
 /* Free the result of getKeysFromCommand. */
+/* 释放查询的key */
 void getKeysFreeResult(int *result) {
     zfree(result);
 }
@@ -1140,6 +1141,7 @@ void getKeysFreeResult(int *result) {
 /* Helper function to extract keys from following commands:
  * ZUNIONSTORE <destkey> <num-keys> <key> <key> ... <key> <options>
  * ZINTERSTORE <destkey> <num-keys> <key> <key> ... <key> <options> */
+/* 合并和求交集并放到目的集合 */
 int *zunionInterGetKeys(struct redisCommand *cmd, robj **argv, int argc, int *numkeys) {
     int i, num, *keys;
     UNUSED(cmd);
