@@ -216,6 +216,7 @@ unsigned long long bioPendingJobsOfType(int type) {
  * used only when it's critical to stop the threads for some reason.
  * Currently Redis does this only on crash (for instance on SIGSEGV) in order
  * to perform a fast memory check without other threads messing with memory. */
+/* 杀死线程 */
 void bioKillThreads(void) {
     int err, j;
 
