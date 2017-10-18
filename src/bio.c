@@ -204,6 +204,7 @@ void *bioProcessBackgroundJobs(void *arg) {
 }
 
 /* Return the number of pending jobs of the specified type. */
+/* 获取添加的任务的工作类型数量 */
 unsigned long long bioPendingJobsOfType(int type) {
     unsigned long long val;
     pthread_mutex_lock(&bio_mutex[type]);
