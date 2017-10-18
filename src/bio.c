@@ -75,20 +75,24 @@ static unsigned long long bio_pending[BIO_NUM_OPS];
 
 /* This structure represents a background Job. It is only used locally to this
  * file as the API does not expose the internals at all. */
+/* io 任务 */
 struct bio_job {
-    time_t time; /* Time at which the job was created. */
+    time_t time; /* Time at which the job was created. */   /* 任务创建的时间 */
     /* Job specific arguments pointers. If we need to pass more than three
      * arguments we can just pass a pointer to a structure or alike. */
-    void *arg1, *arg2, *arg3;
+    void *arg1, *arg2, *arg3;               /* 参数，如果参数超过3，那么将使用一个指针指向某个结构 */
 };
 
+/* io后台任务处理 */
 void *bioProcessBackgroundJobs(void *arg);
 
 /* Make sure we have enough stack to perform all the things we do in the
  * main thread. */
+/* 线程栈 */
 #define REDIS_THREAD_STACK_SIZE (1024*1024*4)
 
 /* Initialize the background system, spawning the thread. */
+/* 初始化后台系统，创建线程 */
 void bioInit(void) {
     pthread_attr_t attr;
     pthread_t thread;
@@ -113,6 +117,7 @@ void bioInit(void) {
     /* Ready to spawn our threads. We use the single argument the thread
      * function accepts in order to pass the job ID the thread is
      * responsible of. */
+    /* 创建线程 */
     for (j = 0; j < BIO_NUM_OPS; j++) {
         void *arg = (void*)(unsigned long) j;
         if (pthread_create(&thread,&attr,bioProcessBackgroundJobs,arg) != 0) {
@@ -123,6 +128,7 @@ void bioInit(void) {
     }
 }
 
+/* 后台任务 */
 void bioCreateBackgroundJob(int type, void *arg1, void *arg2, void *arg3) {
     struct bio_job *job = zmalloc(sizeof(*job));
 
