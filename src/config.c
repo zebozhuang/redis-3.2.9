@@ -37,12 +37,13 @@
 /*-----------------------------------------------------------------------------
  * Config file name-value maps.
  *----------------------------------------------------------------------------*/
-
+/* 配置文件 key-value 的映射 */
 typedef struct configEnum {
-    const char *name;
-    const int val;
+    const char *name;           /* 变量名 */
+    const int val;              /* 值 */
 } configEnum;
 
+/* 最大内存政策变量 */
 configEnum maxmemory_policy_enum[] = {
     {"volatile-lru", MAXMEMORY_VOLATILE_LRU},
     {"volatile-random",MAXMEMORY_VOLATILE_RANDOM},
