@@ -67,6 +67,7 @@ configEnum syslog_facility_enum[] = {
     {NULL, 0}
 };
 
+/* Log 日志级别 */
 configEnum loglevel_enum[] = {
     {"debug", LL_DEBUG},
     {"verbose", LL_VERBOSE},
@@ -83,6 +84,7 @@ configEnum supervised_mode_enum[] = {
     {NULL, 0}
 };
 
+/* AOF 配置 */
 configEnum aof_fsync_enum[] = {
     {"everysec", AOF_FSYNC_EVERYSEC},
     {"always", AOF_FSYNC_ALWAYS},
@@ -121,6 +123,7 @@ const char *configEnumGetName(configEnum *ce, int val) {
 
 /* Wrapper for configEnumGetName() returning "unknown" insetad of NULL if
  * there is no match. */
+/* 配置中，不知道名字的 */
 const char *configEnumGetNameOrUnknown(configEnum *ce, int val) {
     const char *name = configEnumGetName(ce,val);
     return name ? name : "unknown";
@@ -140,7 +143,7 @@ int yesnotoi(char *s) {
     else if (!strcasecmp(s,"no")) return 0;
     else return -1;
 }
-
+/* 服务器保存配置的方式 */
 void appendServerSaveParams(time_t seconds, int changes) {
     server.saveparams = zrealloc(server.saveparams,sizeof(struct saveparam)*(server.saveparamslen+1));
     server.saveparams[server.saveparamslen].seconds = seconds;
@@ -148,12 +151,14 @@ void appendServerSaveParams(time_t seconds, int changes) {
     server.saveparamslen++;
 }
 
+/* 重置保存服务器配置 */
 void resetServerSaveParams(void) {
     zfree(server.saveparams);
     server.saveparams = NULL;
     server.saveparamslen = 0;
 }
 
+/* 加载服务器配置 */
 void loadServerConfigFromString(char *config) {
     char *err = NULL;
     int linenum = 0, totlines, i;
@@ -169,6 +174,7 @@ void loadServerConfigFromString(char *config) {
         linenum = i+1;
         lines[i] = sdstrim(lines[i]," \t\r\n");
 
+        /* 空行和注释行省略 */
         /* Skip comments and blank lines */
         if (lines[i][0] == '#' || lines[i][0] == '\0') continue;
 
@@ -186,6 +192,7 @@ void loadServerConfigFromString(char *config) {
         }
         sdstolower(argv[0]);
 
+        /* 匹配出配置 */
         /* Execute config directives */
         if (!strcasecmp(argv[0],"timeout") && argc == 2) {
             server.maxidletime = atoi(argv[1]);
