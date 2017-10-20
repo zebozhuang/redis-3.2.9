@@ -146,6 +146,7 @@ int rdbSaveLen(rio *rdb, uint32_t len) {
 /* Load an encoded length. The "isencoded" argument is set to 1 if the length
  * is not actually a length but an "encoding type". See the RDB_ENC_*
  * definitions in rdb.h for more information. */
+/* 加载长度 */
 uint32_t rdbLoadLen(rio *rdb, int *isencoded) {
     unsigned char buf[2];
     uint32_t len;
