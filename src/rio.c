@@ -59,6 +59,7 @@
 /* 缓存 IO 的实现 */
 
 /* Returns 1 or 0 for success/failure. */
+/* rio写入缓存,保存在内存 */
 static size_t rioBufferWrite(rio *r, const void *buf, size_t len) {
     r->io.buffer.ptr = sdscatlen(r->io.buffer.ptr,(char*)buf,len);
     r->io.buffer.pos += len;
@@ -66,6 +67,7 @@ static size_t rioBufferWrite(rio *r, const void *buf, size_t len) {
 }
 
 /* Returns 1 or 0 for success/failure. */
+/* rio读出缓存，从内存读 */
 static size_t rioBufferRead(rio *r, void *buf, size_t len) {
     if (sdslen(r->io.buffer.ptr)-r->io.buffer.pos < len)
         return 0; /* not enough buffer to return len bytes. */
