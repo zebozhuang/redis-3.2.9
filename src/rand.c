@@ -73,6 +73,7 @@ int32_t redisLrand48() {
     return (((int32_t)x[2] << (N - 1)) + (x[1] >> 1));
 }
 
+/* 任意数字的生成 */
 void redisSrand48(int32_t seedval) {
     SEED(X0, LOW(seedval), HIGH(seedval));
 }
