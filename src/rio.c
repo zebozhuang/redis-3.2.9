@@ -100,6 +100,7 @@ static const rio rioBufferIO = {
     { { NULL, 0 } } /* union for io-specific vars */
 };
 
+/* rio初始化缓冲 */
 void rioInitWithBuffer(rio *r, sds s) {
     *r = rioBufferIO;
     r->io.buffer.ptr = s;
@@ -109,9 +110,20 @@ void rioInitWithBuffer(rio *r, sds s) {
 /* --------------------- Stdio file pointer implementation ------------------- */
 
 /* Returns 1 or 0 for success/failure. */
+/* 写入文件 */
 static size_t rioFileWrite(rio *r, const void *buf, size_t len) {
     size_t retval;
 
+    /* fwrite是C语言函数，向文件写入一个数据块 */
+    /*
+        size_t fwrite(const void* buffer, size_t size, size_t count, FILE* stream);
+        返回值：返回实际写入的数据块数目
+        （1）buffer：是一个指针，对fwrite来说，是要获取数据的地址；
+        （2）size：要写入内容的单字节数；
+        （3）count:要进行写入size字节的数据项的个数；
+        （4）stream:目标文件指针；
+        （5）返回实际写入的数据项个数count。
+    */
     retval = fwrite(buf,len,1,r->io.file.fp);
     r->io.file.buffered += len;
 
@@ -126,17 +138,20 @@ static size_t rioFileWrite(rio *r, const void *buf, size_t len) {
 }
 
 /* Returns 1 or 0 for success/failure. */
+/* 读出文件 */
 static size_t rioFileRead(rio *r, void *buf, size_t len) {
     return fread(buf,len,1,r->io.file.fp);
 }
 
 /* Returns read/write position in file. */
+/* 返回当前文件读写位置 */
 static off_t rioFileTell(rio *r) {
     return ftello(r->io.file.fp);
 }
 
 /* Flushes any buffer to target device if applicable. Returns 1 on success
  * and 0 on failures. */
+/* 刷新缓冲 */
 static int rioFileFlush(rio *r) {
     return (fflush(r->io.file.fp) == 0) ? 1 : 0;
 }
@@ -153,6 +168,7 @@ static const rio rioFileIO = {
     { { NULL, 0 } } /* union for io-specific vars */
 };
 
+/* 初始化rio */
 void rioInitWithFile(rio *r, FILE *fp) {
     *r = rioFileIO;
     r->io.file.fp = fp;
