@@ -55,6 +55,7 @@
 static int zslLexValueGteMin(robj *value, zlexrangespec *spec);
 static int zslLexValueLteMax(robj *value, zlexrangespec *spec);
 
+/* 创建有序集合节点, 跳跃表节点 */
 zskiplistNode *zslCreateNode(int level, double score, robj *obj) {
     zskiplistNode *zn = zmalloc(sizeof(*zn)+level*sizeof(struct zskiplistLevel));
     zn->score = score;
@@ -62,6 +63,7 @@ zskiplistNode *zslCreateNode(int level, double score, robj *obj) {
     return zn;
 }
 
+/* 有序结合列表创建 */
 zskiplist *zslCreate(void) {
     int j;
     zskiplist *zsl;
@@ -69,7 +71,7 @@ zskiplist *zslCreate(void) {
     zsl = zmalloc(sizeof(*zsl));
     zsl->level = 1;
     zsl->length = 0;
-    zsl->header = zslCreateNode(ZSKIPLIST_MAXLEVEL,0,NULL);
+    zsl->header = zslCreateNode(ZSKIPLIST_MAXLEVEL,0,NULL); /* 最高32层 */
     for (j = 0; j < ZSKIPLIST_MAXLEVEL; j++) {
         zsl->header->level[j].forward = NULL;
         zsl->header->level[j].span = 0;
@@ -79,11 +81,13 @@ zskiplist *zslCreate(void) {
     return zsl;
 }
 
+/* 释放节点 */
 void zslFreeNode(zskiplistNode *node) {
     decrRefCount(node->obj);
     zfree(node);
 }
 
+/* 释放跳跃表 */
 void zslFree(zskiplist *zsl) {
     zskiplistNode *node = zsl->header->level[0].forward, *next;
 
@@ -107,6 +111,7 @@ int zslRandomLevel(void) {
     return (level<ZSKIPLIST_MAXLEVEL) ? level : ZSKIPLIST_MAXLEVEL;
 }
 
+/* 插入节点, 并按照score来排序 */
 zskiplistNode *zslInsert(zskiplist *zsl, double score, robj *obj) {
     zskiplistNode *update[ZSKIPLIST_MAXLEVEL], *x;
     unsigned int rank[ZSKIPLIST_MAXLEVEL];
@@ -130,6 +135,7 @@ zskiplistNode *zslInsert(zskiplist *zsl, double score, robj *obj) {
      * scores, and the re-insertion of score and redis object should never
      * happen since the caller of zslInsert() should test in the hash table
      * if the element is already inside or not. */
+    /* 获取任意高度 */
     level = zslRandomLevel();
     if (level > zsl->level) {
         for (i = zsl->level; i < level; i++) {
@@ -139,6 +145,7 @@ zskiplistNode *zslInsert(zskiplist *zsl, double score, robj *obj) {
         }
         zsl->level = level;
     }
+    /* 创建节点，并插入 */
     x = zslCreateNode(level,score,obj);
     for (i = 0; i < level; i++) {
         x->level[i].forward = update[i]->level[i].forward;
@@ -164,6 +171,7 @@ zskiplistNode *zslInsert(zskiplist *zsl, double score, robj *obj) {
 }
 
 /* Internal function used by zslDelete, zslDeleteByScore and zslDeleteByRank */
+/* 删除节点， 不对外调用  */
 void zslDeleteNode(zskiplist *zsl, zskiplistNode *x, zskiplistNode **update) {
     int i;
     for (i = 0; i < zsl->level; i++) {
@@ -185,6 +193,7 @@ void zslDeleteNode(zskiplist *zsl, zskiplistNode *x, zskiplistNode **update) {
 }
 
 /* Delete an element with matching score/object from the skiplist. */
+/* 删除节点 */
 int zslDelete(zskiplist *zsl, double score, robj *obj) {
     zskiplistNode *update[ZSKIPLIST_MAXLEVEL], *x;
     int i;
