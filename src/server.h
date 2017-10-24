@@ -1295,12 +1295,14 @@ unsigned long aofRewriteBufferSize(void);
 /* Sorted sets data type */
 
 /* Struct to hold a inclusive/exclusive range spec by score comparison. */
+/* 指明某个区间为开区间或闭区间的结构体*/
 typedef struct {
     double min, max;
-    int minex, maxex; /* are min or max exclusive? */
+    int minex, maxex; /* are min or max exclusive? 最大或最小有没有包括 */
 } zrangespec;
 
 /* Struct to hold an inclusive/exclusive range spec by lexicographic comparison. */
+/* 以字典顺序表示的开区间或闭区间 */
 typedef struct {
     robj *min, *max;  /* May be set to shared.(minstring|maxstring) */
     int minex, maxex; /* are min or max exclusive? */
