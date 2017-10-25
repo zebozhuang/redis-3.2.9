@@ -179,9 +179,9 @@ struct redisCommand redisCommandTable[] = {
     {"sdiffstore",sdiffstoreCommand,-3,"wm",0,NULL,1,-1,1,0,0},     /* SDIFFSTORE 求差集并保存在另一个地方 */
     {"smembers",sinterCommand,2,"rS",0,NULL,1,1,1,0,0},             /* SMEMBERS 返回集合中的所有成员 */
     {"sscan",sscanCommand,-3,"rR",0,NULL,1,1,1,0,0},                /* SSCAN 扫描 */
-    {"zadd",zaddCommand,-4,"wmF",0,NULL,1,1,1,0,0},                 
+    {"zadd",zaddCommand,-4,"wmF",0,NULL,1,1,1,0,0},                 /* ZADD 有序集合添加元素 */    
     {"zincrby",zincrbyCommand,4,"wmF",0,NULL,1,1,1,0,0},
-    {"zrem",zremCommand,-3,"wF",0,NULL,1,1,1,0,0},
+    {"zrem",zremCommand,-3,"wF",0,NULL,1,1,1,0,0},                  /* ZREM 有序集合删除元素 */
     {"zremrangebyscore",zremrangebyscoreCommand,4,"w",0,NULL,1,1,1,0,0},
     {"zremrangebyrank",zremrangebyrankCommand,4,"w",0,NULL,1,1,1,0,0},
     {"zremrangebylex",zremrangebylexCommand,4,"w",0,NULL,1,1,1,0,0},
