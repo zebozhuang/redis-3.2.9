@@ -221,23 +221,23 @@ struct redisCommand redisCommandTable[] = {
     {"getset",getsetCommand,3,"wm",0,NULL,1,1,1,0,0},
     {"mset",msetCommand,-3,"wm",0,NULL,1,-1,2,0,0},
     {"msetnx",msetnxCommand,-3,"wm",0,NULL,1,-1,2,0,0},
-    {"randomkey",randomkeyCommand,1,"rR",0,NULL,0,0,0,0,0},
-    {"select",selectCommand,2,"lF",0,NULL,0,0,0,0,0},
-    {"move",moveCommand,3,"wF",0,NULL,1,1,1,0,0},
-    {"rename",renameCommand,3,"w",0,NULL,1,2,1,0,0},
-    {"renamenx",renamenxCommand,3,"wF",0,NULL,1,2,1,0,0},
-    {"expire",expireCommand,3,"wF",0,NULL,1,1,1,0,0},
-    {"expireat",expireatCommand,3,"wF",0,NULL,1,1,1,0,0},
+    {"randomkey",randomkeyCommand,1,"rR",0,NULL,0,0,0,0,0},         /* RANDOMKEY 任意键 */
+    {"select",selectCommand,2,"lF",0,NULL,0,0,0,0,0},               /* SELECT 选择DB */
+    {"move",moveCommand,3,"wF",0,NULL,1,1,1,0,0},                   /* MOVE */
+    {"rename",renameCommand,3,"w",0,NULL,1,2,1,0,0},                /* RENAME 重命名KEY */
+    {"renamenx",renamenxCommand,3,"wF",0,NULL,1,2,1,0,0},           /* RENAMENX 如果不存在则重命名? */
+    {"expire",expireCommand,3,"wF",0,NULL,1,1,1,0,0},               /* EXPIRE 过期 */
+    {"expireat",expireatCommand,3,"wF",0,NULL,1,1,1,0,0},           /* EXPIREAT 过期 */
     {"pexpire",pexpireCommand,3,"wF",0,NULL,1,1,1,0,0},
     {"pexpireat",pexpireatCommand,3,"wF",0,NULL,1,1,1,0,0},
     {"keys",keysCommand,2,"rS",0,NULL,0,0,0,0,0},
     {"scan",scanCommand,-2,"rR",0,NULL,0,0,0,0,0},
     {"dbsize",dbsizeCommand,1,"rF",0,NULL,0,0,0,0,0},
     {"auth",authCommand,2,"sltF",0,NULL,0,0,0,0,0},
-    {"ping",pingCommand,-1,"tF",0,NULL,0,0,0,0,0},
-    {"echo",echoCommand,2,"F",0,NULL,0,0,0,0,0},
-    {"save",saveCommand,1,"as",0,NULL,0,0,0,0,0},
-    {"bgsave",bgsaveCommand,-1,"a",0,NULL,0,0,0,0,0},
+    {"ping",pingCommand,-1,"tF",0,NULL,0,0,0,0,0},                  /* PING ping */
+    {"echo",echoCommand,2,"F",0,NULL,0,0,0,0,0},                    /* ECHO echo */
+    {"save",saveCommand,1,"as",0,NULL,0,0,0,0,0},                   /* SAVE rdb或者aof 保存 */
+    {"bgsave",bgsaveCommand,-1,"a",0,NULL,0,0,0,0,0},               /* BGSAVE 保存 */
     {"bgrewriteaof",bgrewriteaofCommand,1,"a",0,NULL,0,0,0,0,0},
     {"shutdown",shutdownCommand,-1,"alt",0,NULL,0,0,0,0,0},
     {"lastsave",lastsaveCommand,1,"RF",0,NULL,0,0,0,0,0},
