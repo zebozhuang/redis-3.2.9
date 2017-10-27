@@ -45,13 +45,14 @@ extern char **environ;
 /* ======================== Sentinel global state =========================== */
 
 /* Address object, used to describe an ip:port pair. */
+/* 哨兵地址数据结构 */
 typedef struct sentinelAddr {
     char *ip;
     int port;
 } sentinelAddr;
 
 /* A Sentinel Redis Instance object is monitoring. */
-#define SRI_MASTER  (1<<0)
+#define SRI_MASTER  (1<<0)              /* 哨兵监控的实例 */
 #define SRI_SLAVE   (1<<1)
 #define SRI_SENTINEL (1<<2)
 #define SRI_S_DOWN (1<<3)   /* Subjectively down (no quorum). */

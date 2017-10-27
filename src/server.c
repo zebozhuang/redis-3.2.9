@@ -237,19 +237,20 @@ struct redisCommand redisCommandTable[] = {
     {"ping",pingCommand,-1,"tF",0,NULL,0,0,0,0,0},                  /* PING ping */
     {"echo",echoCommand,2,"F",0,NULL,0,0,0,0,0},                    /* ECHO echo */
     {"save",saveCommand,1,"as",0,NULL,0,0,0,0,0},                   /* SAVE rdb或者aof 保存 */
-    {"bgsave",bgsaveCommand,-1,"a",0,NULL,0,0,0,0,0},               /* BGSAVE 保存 */
+    {"bgsave",bgsaveCommand,-1,"a",0,NULL,0,0,0,0,0},               /* BGSAVE 保存 ]
+    */
     {"bgrewriteaof",bgrewriteaofCommand,1,"a",0,NULL,0,0,0,0,0},
-    {"shutdown",shutdownCommand,-1,"alt",0,NULL,0,0,0,0,0},
+    {"shutdown",shutdownCommand,-1,"alt",0,NULL,0,0,0,0,0},         /* SHUTDOWN 关闭服务器 */
     {"lastsave",lastsaveCommand,1,"RF",0,NULL,0,0,0,0,0},
     {"type",typeCommand,2,"rF",0,NULL,1,1,1,0,0},
-    {"multi",multiCommand,1,"sF",0,NULL,0,0,0,0,0},
-    {"exec",execCommand,1,"sM",0,NULL,0,0,0,0,0},
-    {"discard",discardCommand,1,"sF",0,NULL,0,0,0,0,0},
+    {"multi",multiCommand,1,"sF",0,NULL,0,0,0,0,0},                 /* MULTI 事物 */
+    {"exec",execCommand,1,"sM",0,NULL,0,0,0,0,0},                   /* EXEC 事物执行 */
+    {"discard",discardCommand,1,"sF",0,NULL,0,0,0,0,0},             /* DISCARD 计数 */
     {"sync",syncCommand,1,"ars",0,NULL,0,0,0,0,0},
     {"psync",syncCommand,3,"ars",0,NULL,0,0,0,0,0},
     {"replconf",replconfCommand,-1,"aslt",0,NULL,0,0,0,0,0},
-    {"flushdb",flushdbCommand,1,"w",0,NULL,0,0,0,0,0},
-    {"flushall",flushallCommand,1,"w",0,NULL,0,0,0,0,0},
+    {"flushdb",flushdbCommand,1,"w",0,NULL,0,0,0,0,0},              /* FLUSHDB 清除数据库 */
+    {"flushall",flushallCommand,1,"w",0,NULL,0,0,0,0,0},            /* FLUSHALL 清除所有数据库 */
     {"sort",sortCommand,-2,"wm",0,sortGetKeys,1,1,1,0,0},
     {"info",infoCommand,-1,"lt",0,NULL,0,0,0,0,0},
     {"monitor",monitorCommand,1,"as",0,NULL,0,0,0,0,0},
