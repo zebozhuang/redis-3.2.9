@@ -502,6 +502,7 @@ int sdsull2str(char *s, unsigned long long v) {
  *
  * sdscatprintf(sdsempty(),"%lld\n", value);
  */
+/* 长整型整数转为sds */
 sds sdsfromlonglong(long long value) {
     char buf[SDS_LLSTR_SIZE];
     int len = sdsll2str(buf,value);
@@ -692,6 +693,7 @@ sds sdscatfmt(sds s, char const *fmt, ...) {
  *
  * Output will be just "Hello World".
  */
+/* sds去除前后不想关字符 */
 sds sdstrim(sds s, const char *cset) {
     char *start, *end, *sp, *ep;
     size_t len;
@@ -723,6 +725,7 @@ sds sdstrim(sds s, const char *cset) {
  * s = sdsnew("Hello World");
  * sdsrange(s,1,-1); => "ello World"
  */
+/* 按范围取字符串 */
 void sdsrange(sds s, int start, int end) {
     size_t newlen, len = sdslen(s);
 
@@ -752,6 +755,7 @@ void sdsrange(sds s, int start, int end) {
 }
 
 /* Apply tolower() to every character of the sds string 's'. */
+/* sds 小写 */
 void sdstolower(sds s) {
     int len = sdslen(s), j;
 
@@ -759,6 +763,7 @@ void sdstolower(sds s) {
 }
 
 /* Apply toupper() to every character of the sds string 's'. */
+/* sds大写 */
 void sdstoupper(sds s) {
     int len = sdslen(s), j;
 
@@ -776,6 +781,7 @@ void sdstoupper(sds s) {
  * If two strings share exactly the same prefix, but one of the two has
  * additional characters, the longer string is considered to be greater than
  * the smaller one. */
+/* sds比较 */
 int sdscmp(const sds s1, const sds s2) {
     size_t l1, l2, minlen;
     int cmp;
@@ -804,6 +810,7 @@ int sdscmp(const sds s1, const sds s2) {
  * requires length arguments. sdssplit() is just the
  * same function but for zero-terminated strings.
  */
+/* 按长度分sds */
 sds *sdssplitlen(const char *s, int len, const char *sep, int seplen, int *count) {
     int elements = 0, slots = 5, start = 0, j;
     sds *tokens;
