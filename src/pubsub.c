@@ -57,6 +57,7 @@ int listMatchPubsubPattern(void *a, void *b) {
 }
 
 /* Return the number of channels + patterns a client is subscribed to. */
+/* 返回用户订阅数 */
 int clientSubscriptionsCount(client *c) {
     return dictSize(c->pubsub_channels)+
            listLength(c->pubsub_patterns);
@@ -71,6 +72,7 @@ int pubsubSubscribeChannel(client *c, robj *channel) {
     int retval = 0;
 
     /* Add the channel to the client -> channels hash table */
+    /* 添加用户到订阅该频道的模式 */
     if (dictAdd(c->pubsub_channels,channel,NULL) == DICT_OK) {
         retval = 1;
         incrRefCount(channel);
@@ -83,6 +85,7 @@ int pubsubSubscribeChannel(client *c, robj *channel) {
         } else {
             clients = dictGetVal(de);
         }
+        /*添加客户端到服务器（server.clients是引用的）*/
         listAddNodeTail(clients,c);
     }
     /* Notify the client */
@@ -105,9 +108,11 @@ int pubsubUnsubscribeChannel(client *c, robj *channel, int notify) {
     /* Remove the channel from the client -> channels hash table */
     incrRefCount(channel); /* channel may be just a pointer to the same object
                             we have in the hash tables. Protect it... */
+    /* 先删除用户订阅的频道 */
     if (dictDelete(c->pubsub_channels,channel) == DICT_OK) {
         retval = 1;
         /* Remove the client from the channel -> clients list hash table */
+        /* 从服务器里面找到订阅该频道的用，并删除掉该用户 */
         de = dictFind(server.pubsub_channels,channel);
         serverAssertWithInfo(c,NULL,de != NULL);
         clients = dictGetVal(de);
@@ -139,15 +144,16 @@ int pubsubUnsubscribeChannel(client *c, robj *channel, int notify) {
 int pubsubSubscribePattern(client *c, robj *pattern) {
     int retval = 0;
 
+    /* 该模式是否已存 */
     if (listSearchKey(c->pubsub_patterns,pattern) == NULL) {
         retval = 1;
         pubsubPattern *pat;
-        listAddNodeTail(c->pubsub_patterns,pattern);
+        listAddNodeTail(c->pubsub_patterns,pattern);    /* 给用户添加该模式 */
         incrRefCount(pattern);
         pat = zmalloc(sizeof(*pat));
         pat->pattern = getDecodedObject(pattern);
         pat->client = c;
-        listAddNodeTail(server.pubsub_patterns,pat);
+        listAddNodeTail(server.pubsub_patterns,pat);    /* 给服务器添加该模式 */
     }
     /* Notify the client */
     addReply(c,shared.mbulkhdr[3]);

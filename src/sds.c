@@ -861,6 +861,7 @@ cleanup:
 }
 
 /* Free the result returned by sdssplitlen(), or do nothing if 'tokens' is NULL. */
+/* sds组释放内存 */
 void sdsfreesplitres(sds *tokens, int count) {
     if (!tokens) return;
     while(count--)
