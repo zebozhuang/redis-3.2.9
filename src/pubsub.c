@@ -302,6 +302,7 @@ int pubsubPublishMessage(robj *channel, robj *message) {
  *----------------------------------------------------------------------------*/
 /* Pubsub的命令实现，上面的低级命令实现 */
 
+/* 订阅 */
 void subscribeCommand(client *c) {
     int j;
 
@@ -310,6 +311,7 @@ void subscribeCommand(client *c) {
     c->flags |= CLIENT_PUBSUB;
 }
 
+/* 取消订阅 */
 void unsubscribeCommand(client *c) {
     if (c->argc == 1) {
         pubsubUnsubscribeAllChannels(c,1);
@@ -322,6 +324,7 @@ void unsubscribeCommand(client *c) {
     if (clientSubscriptionsCount(c) == 0) c->flags &= ~CLIENT_PUBSUB;
 }
 
+/* 订阅 */
 void psubscribeCommand(client *c) {
     int j;
 
@@ -330,6 +333,7 @@ void psubscribeCommand(client *c) {
     c->flags |= CLIENT_PUBSUB;
 }
 
+/* 取消订阅 */
 void punsubscribeCommand(client *c) {
     if (c->argc == 1) {
         pubsubUnsubscribeAllPatterns(c,1);
@@ -342,6 +346,7 @@ void punsubscribeCommand(client *c) {
     if (clientSubscriptionsCount(c) == 0) c->flags &= ~CLIENT_PUBSUB;
 }
 
+/* 发布 */
 void publishCommand(client *c) {
     int receivers = pubsubPublishMessage(c->argv[1],c->argv[2]);
     if (server.cluster_enabled)
