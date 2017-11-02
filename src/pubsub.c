@@ -197,6 +197,7 @@ int pubsubUnsubscribePattern(client *c, robj *pattern, int notify) {
 
 /* Unsubscribe from all the channels. Return the number of channels the
  * client was subscribed to. */
+/* 取消订阅所有频道 */
 int pubsubUnsubscribeAllChannels(client *c, int notify) {
     dictIterator *di = dictGetSafeIterator(c->pubsub_channels);
     dictEntry *de;
@@ -222,6 +223,7 @@ int pubsubUnsubscribeAllChannels(client *c, int notify) {
 /* Unsubscribe from all the patterns. Return the number of patterns the
  * client was subscribed from. */
 /* tui*/
+/* 取消订阅所有的模式 */
 int pubsubUnsubscribeAllPatterns(client *c, int notify) {
     listNode *ln;
     listIter li;
@@ -298,6 +300,7 @@ int pubsubPublishMessage(robj *channel, robj *message) {
 /*-----------------------------------------------------------------------------
  * Pubsub commands implementation
  *----------------------------------------------------------------------------*/
+/* Pubsub的命令实现，上面的低级命令实现 */
 
 void subscribeCommand(client *c) {
     int j;
