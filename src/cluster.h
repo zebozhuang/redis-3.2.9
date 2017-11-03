@@ -48,6 +48,7 @@ typedef struct clusterLink {
 } clusterLink;
 
 /* Cluster node flags and macros. */
+/* 集群名称和宏 */
 #define CLUSTER_NODE_MASTER 1     /* The node is a master */        /* master节点 */
 #define CLUSTER_NODE_SLAVE 2      /* The node is a slave */         /* slave节点 */
 #define CLUSTER_NODE_PFAIL 4      /* Failure? Need acknowledge */   /* 节点失败 */
@@ -68,6 +69,7 @@ typedef struct clusterLink {
 #define nodeFailed(n) ((n)->flags & CLUSTER_NODE_FAIL)
 
 /* Reasons why a slave is not able to failover. */
+/* 不能够failover的原因 */
 #define CLUSTER_CANT_FAILOVER_NONE 0
 #define CLUSTER_CANT_FAILOVER_DATA_AGE 1
 #define CLUSTER_CANT_FAILOVER_WAITING_DELAY 2
